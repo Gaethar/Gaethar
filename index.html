@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gaethar — Hoja de Personaje</title>
+<meta name="theme-color" content="#13100b"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0c08;--bgDeep:#0a0805;--bgCard:#19140e;--bgCard2:#211a11;--bgInput:#241c12;
+  --border:#3a2d1c;--borderSoft:rgba(203,169,79,.14);--borderFocus:#c69842;
+  --gold:#cba94f;--gold2:#b8893a;--goldDim:#725522;--goldBright:#f3dda0;--goldPale:#fff0bd;
+  --text:#e8dfcd;--textDim:#9d8e75;--textBright:#fff8e8;
+  --danger:#bd4b38;--success:#4e8a5b;--blue:#587da6;
+  --fn:'Crimson Text',serif;--fd:'Cinzel',serif;
+  --shadow:0 12px 34px rgba(0,0,0,.34);--shadowSoft:0 5px 16px rgba(0,0,0,.24);
+  --glow:0 0 18px rgba(240,217,138,.20);--radius:12px;--radiusSm:7px
+}
+html{scrollbar-color:var(--goldDim) var(--bg);scrollbar-width:thin;background:var(--bgDeep)}
+body{font-family:var(--fn);color:var(--text);min-height:100vh;line-height:1.5;background:
+  radial-gradient(900px 520px at 50% -80px,rgba(203,169,79,.08),transparent 68%),
+  linear-gradient(180deg,#151007 0%,var(--bg) 36%,var(--bgDeep) 100%);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.3;background:
+  linear-gradient(90deg,transparent 0,rgba(203,169,79,.022) 50%,transparent 100%),
+  repeating-linear-gradient(0deg,rgba(255,255,255,.008) 0 1px,transparent 1px 4px)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.018;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#app{width:min(1460px,calc(100% - 28px));margin:0 auto;padding:14px 0 42px;position:relative;z-index:1}
+::selection{background:rgba(203,169,79,.30);color:var(--textBright)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--goldDim);border-radius:6px;border:2px solid var(--bg)}::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+button,input,textarea,select{font:inherit}button{-webkit-tap-highlight-color:transparent}
+input,textarea,select{transition:border-color .15s ease,box-shadow .15s ease,background .15s ease,color .15s ease}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input[type=number]{-moz-appearance:textfield}
+
+/* ── Cabecera / identidad ── */
+.header{position:sticky;top:10px;z-index:100;padding:11px 14px;border:1px solid rgba(203,169,79,.30);border-radius:14px;background:linear-gradient(180deg,rgba(31,24,15,.97),rgba(15,12,8,.97));box-shadow:0 12px 34px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,240,189,.05);backdrop-filter:blur(12px)}
+.topbar-main{display:flex;align-items:center;gap:14px;min-height:54px}
+.brand{display:flex;align-items:center;gap:11px;min-width:200px}
+.brand-mark{width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(203,169,79,.16));flex:none}
+.brand-title{font-family:var(--fd);font-size:20px;font-weight:700;color:var(--goldBright);letter-spacing:3.4px;line-height:1;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.brand-sub{font-family:var(--fd);font-size:8px;color:var(--textDim);letter-spacing:2.2px;margin-top:5px;text-transform:uppercase}
+.character-summary{min-width:0;flex:1;padding-left:16px;border-left:1px solid var(--borderSoft)}
+.character-name{font-family:var(--fd);font-size:14px;color:var(--textBright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.character-meta{font-size:11px;color:var(--textDim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(180deg,rgba(203,169,79,.10),rgba(203,169,79,.04));border:1px solid rgba(203,169,79,.28);border-radius:8px;color:var(--goldBright);padding:8px 12px;font-family:var(--fd);font-size:10px;letter-spacing:.8px;cursor:pointer;white-space:nowrap;transition:.15s ease;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.header-action:hover{border-color:var(--gold);background:rgba(203,169,79,.13);box-shadow:var(--glow)}
+.mobile-tabs{display:none;gap:5px;margin-top:10px;overflow-x:auto;padding:8px 0 2px;border-top:1px solid var(--borderSoft);scrollbar-width:none}.mobile-tabs::-webkit-scrollbar{display:none}
+
+/* ── Estructura principal ── */
+.app-shell{display:grid;grid-template-columns:218px minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
+.sidebar{position:sticky;top:98px;border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(180deg,rgba(28,22,14,.92),rgba(16,13,9,.94));padding:12px;box-shadow:var(--shadowSoft);overflow:hidden}
+.sidebar::before{content:"";display:block;height:2px;margin:-12px -12px 12px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7}
+.sidebar-caption{font-family:var(--fd);font-size:8px;letter-spacing:2px;color:var(--textDim);padding:4px 8px 10px;text-transform:uppercase}
+.sidebar-nav{display:flex;flex-direction:column;gap:4px}
+.workspace{min-width:0}
+.workspace-actions{display:flex;justify-content:flex-end;align-items:center;min-height:28px;margin:0 3px 8px}
+.content-panel,.manager-panel{position:relative;border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(180deg,rgba(29,23,15,.94),rgba(18,14,9,.96));box-shadow:var(--shadow);padding:10px 22px 70px;overflow:hidden}
+.content-panel::before,.manager-panel::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--goldDim),var(--gold),var(--goldDim),transparent);opacity:.7}
+.manager-panel{max-width:940px;margin:16px auto 0;padding:10px 22px 30px}
+
+/* ── Navegación ── */
+.tab-btn{display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid transparent;border-radius:7px;color:var(--textDim);padding:7px 10px;font-family:var(--fd);font-size:9px;letter-spacing:.8px;cursor:pointer;white-space:nowrap;transition:color .15s ease,background .15s ease,border-color .15s ease,transform .08s ease}
+.tab-btn:hover{color:var(--textBright);background:rgba(203,169,79,.05)}
+.tab-btn.active{background:linear-gradient(90deg,rgba(203,169,79,.17),rgba(203,169,79,.05));border-color:rgba(203,169,79,.38);color:var(--goldBright);box-shadow:inset 2px 0 0 var(--gold),0 0 12px rgba(203,169,79,.08)}
+.sidebar-tab{width:100%;justify-content:flex-start;padding:10px 11px;font-size:10px}
+.sidebar-tab svg{width:15px;height:15px;opacity:.9}.sidebar-tab.active svg{color:var(--goldBright)}
+
+/* ── Secciones ── */
+.sh{position:relative;display:flex;align-items:center;gap:10px;padding:0 2px 9px 26px;margin:27px 0 14px;font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:2.1px;color:var(--goldBright);text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.sh::before{content:"";position:absolute;left:4px;top:2px;width:10px;height:10px;border:1px solid var(--gold);transform:rotate(45deg);box-shadow:inset 0 0 0 2px rgba(203,169,79,.12),0 0 8px rgba(203,169,79,.15)}
+.sh::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,var(--gold),rgba(138,106,46,.50) 36%,transparent 85%)}
+.content-panel>.sh:first-child,.manager-panel>.sh:first-child{margin-top:12px}
+
+/* ── Campos ── */
+.inp,.inp-shrink,.sel,textarea{background:linear-gradient(180deg,rgba(40,31,19,.94),rgba(31,24,15,.96));border:1px solid var(--border);border-radius:var(--radiusSm);color:var(--text);outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.018)}
+.inp,.inp-shrink{padding:7px 9px;font-size:14px;width:100%;min-height:34px}.inp-shrink{overflow:hidden;text-overflow:ellipsis}
+.sel{padding:7px 28px 7px 9px;font-size:12px;width:100%;min-height:34px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23b89a55'/%3E%3C/svg%3E"),linear-gradient(180deg,rgba(40,31,19,.94),rgba(31,24,15,.96));background-repeat:no-repeat;background-position:right 9px center,center;background-size:10px 6px,auto}
+textarea{width:100%;font-size:14px;padding:12px;resize:vertical;line-height:1.6}
+.inp:hover,.inp-shrink:hover,.sel:hover,textarea:hover{border-color:#584326}
+.inp:focus,.inp-shrink:focus,.sel:focus,textarea:focus{border-color:var(--borderFocus);background:#2b2115;box-shadow:0 0 0 2px rgba(184,137,58,.13),0 0 14px rgba(184,137,58,.08)}
+.inp::placeholder,textarea::placeholder{color:#6f624e}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 14px;padding:14px;border:1px solid var(--borderSoft);border-radius:10px;background:rgba(0,0,0,.08)}
+
+/* ── Tarjetas y cifras ── */
+.stat-grid{display:grid;gap:9px}.stat-grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.stat-grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.sb{background:radial-gradient(120% 100% at 50% 0,rgba(203,169,79,.09),transparent 56%),linear-gradient(165deg,#281f14,#171109);border:1px solid rgba(203,169,79,.30);border-radius:10px;padding:12px 8px 10px;text-align:center;min-width:70px;flex:1;box-shadow:inset 0 1px 0 rgba(240,217,138,.06),var(--shadowSoft);position:relative;overflow:hidden}
+.sb::after{content:"";position:absolute;inset:auto 16% 0;height:1px;background:linear-gradient(90deg,transparent,var(--goldDim),transparent)}
+.sb-label{font-size:9px;color:var(--textDim);font-family:var(--fd);letter-spacing:1px;margin-bottom:5px;text-transform:uppercase}
+.sb-val{font-size:22px;line-height:1.1;color:var(--goldBright);font-family:var(--fd);font-weight:700;text-shadow:0 0 11px rgba(240,217,138,.22)}
+.sb-sub{font-size:9px;color:#746a5a;margin-top:5px;line-height:1.25}
+.atk-row{display:flex;align-items:center;gap:8px;padding:10px 11px;background:linear-gradient(165deg,rgba(39,30,18,.94),rgba(24,18,11,.96));border:1px solid var(--border);border-radius:9px;margin-bottom:7px;flex-wrap:wrap;box-shadow:var(--shadowSoft)}
+.atk-row:hover{border-color:rgba(203,169,79,.28)}
+.atk-result{font-size:19px;font-family:var(--fd);font-weight:700;min-width:42px;text-align:center}
+.mod-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;padding:4px 0}.mod-label{font-size:11px;color:var(--textDim);min-width:80px}
+
+/* ── Tablas / listados ── */
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;border:1px solid var(--borderSoft);border-radius:9px;overflow:hidden;background:rgba(0,0,0,.07)}
+th{padding:8px 9px;text-align:left;font-size:9px;color:var(--gold);font-family:var(--fd);letter-spacing:1px;border-bottom:1px solid rgba(203,169,79,.28);background:rgba(203,169,79,.045);text-shadow:0 1px 1px rgba(0,0,0,.6);text-transform:uppercase}
+td{padding:7px 9px;border-bottom:1px solid rgba(138,106,46,.12)}tbody tr:last-child td{border-bottom:none}tbody tr:hover td{background:rgba(203,169,79,.025)}
+.col-h{font-size:9px;color:var(--textDim);font-family:var(--fd);letter-spacing:1px;text-align:center;text-transform:uppercase}
+
+/* ── Botones ── */
+.btn-s,.btn-d,.btn-blue{transition:filter .15s ease,box-shadow .15s ease,transform .08s ease}
+.btn-s:hover,.btn-d:hover,.btn-blue:hover{filter:brightness(1.12)}
+.btn-s:active,.btn-d:active,.btn-blue:active,.btn-ghost:active,.roll-tap:active,.tab-btn:active,.header-action:active{transform:scale(.97)}
+.btn-ghost{background:transparent;border:1px solid transparent;color:var(--gold);opacity:.74;cursor:pointer;padding:6px 8px;font-size:11px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;transition:opacity .15s ease,transform .08s ease,background .15s ease,border-color .15s ease}.btn-ghost:hover{opacity:1;background:rgba(203,169,79,.055);border-color:rgba(203,169,79,.12)}
+.roll-tap{display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none;transition:transform .08s ease}
+.btn-s{background:linear-gradient(180deg,#579663,#3c7448);border:1px solid rgba(255,255,255,.05);border-radius:5px;color:#fff;padding:5px 9px;font-size:11px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.btn-d{background:linear-gradient(180deg,#c85642,#9d392a);border:1px solid rgba(255,255,255,.05);border-radius:5px;color:#fff;padding:5px 9px;font-size:11px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.btn-blue{background:linear-gradient(180deg,#5a82ad,#3f638b);border:1px solid rgba(255,255,255,.05);border-radius:7px;color:#fff;padding:10px 14px;font-size:12px;font-family:var(--fd);letter-spacing:.8px;cursor:pointer;width:100%;box-shadow:0 2px 6px rgba(0,0,0,.38)}
+
+/* ── Utilidades visuales del contenido existente ── */
+.content-panel [style*="background:var(--bgCard)"],.manager-panel [style*="background:var(--bgCard)"]{box-shadow:var(--shadowSoft)}
+.content-panel [style*="borderRadius:\"8px\""]{border-color:var(--border)!important}
+
+@keyframes tabIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}.tab-fade{animation:tabIn .18s ease}
+
+/* ── Responsive ── */
+@media (max-width:1060px){
+  #app{width:min(100% - 20px,1000px)}
+  .app-shell{grid-template-columns:190px minmax(0,1fr)}
+  .stat-grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:820px){
+  #app{width:100%;padding:0 0 28px}
+  .header{top:0;border-left:0;border-right:0;border-top:0;border-radius:0;padding:10px 12px}
+  .brand{min-width:0}.brand-mark{width:36px;height:36px}.brand-title{font-size:17px;letter-spacing:2.6px}.brand-sub{font-size:7px;letter-spacing:1.6px}
+  .character-summary{padding-left:10px}.character-name{font-size:12px}.character-meta{font-size:10px}
+  .header-action{padding:7px 9px;font-size:9px}.mobile-tabs{display:flex}
+  .app-shell{display:block;margin-top:0}.sidebar{display:none}.workspace-actions{padding:8px 12px 0;margin:0}
+  .content-panel{border-left:0;border-right:0;border-radius:0;padding:4px 14px 76px;box-shadow:none}.manager-panel{margin:0;border-left:0;border-right:0;border-radius:0;padding:4px 14px 28px;box-shadow:none}
+  .form-grid{padding:10px;gap:9px}.stat-grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .brand-sub{display:none}.character-summary{display:none}.topbar-main{gap:8px}.header-action span{display:none}.header-action{width:38px;height:36px;padding:0}
+  .form-grid{grid-template-columns:1fr 1fr;gap:8px}.stat-grid-3,.stat-grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sh{font-size:12px;letter-spacing:1.5px;margin-top:24px}
+  td,th{padding-left:6px;padding-right:6px}
+}
+@media (max-width:390px){.form-grid{grid-template-columns:1fr}.stat-grid-3,.stat-grid-4{grid-template-columns:1fr 1fr}.brand-title{font-size:15px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ── Impresión / PDF ── */
+@media print{
+  body{background:#fff;color:#222}body::before,body::after,.sidebar,.mobile-tabs,.workspace-actions,.header-action{display:none!important}
+  #app{width:100%;padding:0}.header{position:static;border:0;border-bottom:2px solid #8a6a2e;border-radius:0;box-shadow:none;background:#fff;color:#222}.brand-title,.character-name{color:#5f471e}.brand-sub,.character-meta{color:#666}
+  .content-panel{border:0;box-shadow:none;background:#fff;padding:0}.sh{color:#5f471e;break-after:avoid}.inp,.inp-shrink,.sel,textarea,.sb,table{background:#fff!important;color:#222!important;box-shadow:none!important}.inp,.inp-shrink,.sel,textarea{border-color:#bbb!important}.sb{border-color:#9e7c3d}.sb-val{color:#5f471e;text-shadow:none}.tab-fade{animation:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const ATTRIBUTES=[{key:"FUE",label:"Fuerza"},{key:"AGI",label:"Agilidad"},{key:"CON",label:"Constitución"},{key:"INT",label:"Inteligencia"},{key:"VOL",label:"Voluntad"},{key:"CM",label:"Combate Mele"},{key:"CD",label:"Combate Distancia"}];
+const SKILLS=[{name:"Acrobacias",attr:"AGI"},{name:"Actuación",attr:"VOL"},{name:"Arcana",attr:"INT"},{name:"Atletismo",attr:"FUE"},{name:"Engaño",attr:"VOL"},{name:"Forzar Cerraduras",attr:"AGI"},{name:"Historia",attr:"INT"},{name:"Intimidación",attr:"VOL"},{name:"Investigación",attr:"INT"},{name:"Juego de Manos",attr:"AGI"},{name:"Manejo de Animales",attr:"INT"},{name:"Medicina",attr:"INT"},{name:"Naturaleza",attr:"INT"},{name:"Percepción",attr:"INT"},{name:"Perspicacia",attr:"VOL"},{name:"Persuasión",attr:"VOL"},{name:"Religión",attr:"INT"},{name:"Reparación",attr:"INT"},{name:"Sigilo",attr:"AGI"},{name:"Supervivencia",attr:"INT"}];
+const AFFLICTIONS=["Congelado","Envenenado","Helamiento","Ignición","Quemadura","Sangrado","Sangrado Profundo"];
+const STATUS_EFFECTS=["Agarrado","Amarrado","Asustado","Aturdido","Cegado","Derribado","Dormido","Encantado","Inmovilizado","Invisible","Mudo","Oculto","Paralizado","Petrificado","Provocado","Sordo"];
+const RESISTANCES=["Fuego","Hielo","Eléctrico","Arcano","Sombra","Radiante","Astral","Veneno","Ácido"];
+const DOTES_LEVELS=["Defecto","Nivel 4","Nivel 8","Nivel 12","Nivel 16","Nivel 20"];
+const TABS=[{key:"general",label:"General",icon:"persona"},{key:"combate",label:"Combate",icon:"escudo"},{key:"habilidades",label:"Habilid.",icon:"libro"},{key:"equipo",label:"Equipo",icon:"bolsa"},{key:"tecnicas",label:"Técnicas",icon:"destello"},{key:"estado",label:"Estado",icon:"craneo"},{key:"iniciativa",label:"Iniciativa",icon:"rayo"},{key:"notas",label:"Notas",icon:"pluma"}];
+const rd=n=>Math.round(n);
+const AGE_DATA={Joven:{atr:260,pn1:17,pnPer:7},Adulto:{atr:310,pn1:15,pnPer:5},Anciano:{atr:310,pn1:15,pnPer:5}};
+const clampNiv=n=>Math.max(1,Math.min(20,parseInt(n)||1));
+function atrExtra(niv){let e=0;for(let L=2;L<=niv;L++)e+=(L%2===0?10:5);return e}
+function atrBudget(edad,niv){const d=AGE_DATA[edad]||AGE_DATA.Adulto;niv=clampNiv(niv);return d.atr+atrExtra(niv)}
+function pnSugerido(edad,niv){const d=AGE_DATA[edad]||AGE_DATA.Adulto;niv=clampNiv(niv);return d.pn1+d.pnPer*(niv-1)}
+const COMP_LEVELS=[{key:"sinPracticar",label:"Sin practicar",defaultVal:10},{key:"practicado",label:"Practicado",defaultVal:0},{key:"entrenado",label:"Entrenado",defaultVal:-10},{key:"experto",label:"Experto",defaultVal:-20}];
+const COMP_DEFAULTS=Object.fromEntries(COMP_LEVELS.map(c=>[c.key,c.defaultVal]));
+const WEAPON_SLOTS=[{key:"manoDerecha",label:"Mano Derecha"},{key:"manoIzquierda",label:"Mano Izquierda"},{key:"armaSecundaria",label:"Arma Secundaria"}];
+const PREPARED_SLOTS=[{key:"preparadoArmaPrincipal",label:"Arma Principal Prep."}];
+const ALL_WEAPON_SLOTS=[...WEAPON_SLOTS,...PREPARED_SLOTS];
+const SHIELD_OPTIONS=["No","Ligero","Pesado"];
+
+let _uid=0;function uid(){return Date.now().toString(36)+"_"+(++_uid)}
+
+function emptyChar(){return{id:uid(),nombre:"",especie:"",clase:"",trasfondo:"",defectos:"",nivel:1,edad:"Adulto",experiencia:0,tamano:"",velocidad:"",pRaciales:"",attrs:{FUE:10,AGI:10,CON:10,INT:10,VOL:10,CM:10,CD:10},attrsActual:{FUE:10,AGI:10,CON:10,INT:10,VOL:10,CM:10,CD:10},stats:{pvGast:0,amGast:0,paGast:0,recursoGast:0,estresActual:0},
+mods:{pvMod:0,amMod:0,iniMod:0,pCritMod:0,dCritMod:0,percPasMod:0,invPasMod:0,perspPasMod:0,bCMMod:0,bCDMod:0,aLigMod:0,aMedMod:0,aPesMod:0},
+atkMods:{manoDerecha:0,manoIzquierda:0,armaSecundaria:0,preparadoArmaPrincipal:0,preparadoArmaSecundaria:0},
+skills:Object.fromEntries(SKILLS.map(s=>[s.name,{nivel:"sinPracticar",valor:10}])),
+competencias:Array.from({length:20},()=>({nombre:"",valor:""})),
+equipo:{armaduraPrincipal:"",faldon:"",casco:"",guantes:"",botas:"",capa:"",anillo1:"",anillo2:"",manoDerecha:"",manoIzquierda:"",armaSecundaria:"",preparadoArmaPrincipal:"",preparadoArmaSecundaria:""},
+armasComp:{manoDerecha:{nivel:"sinPracticar",valor:10},manoIzquierda:{nivel:"sinPracticar",valor:10},armaSecundaria:{nivel:"sinPracticar",valor:10},preparadoArmaPrincipal:{nivel:"sinPracticar",valor:10},preparadoArmaSecundaria:{nivel:"sinPracticar",valor:10}},
+atkMode:{manoDerecha:"mele",manoIzquierda:"mele",armaSecundaria:"mele",preparadoArmaPrincipal:"mele",preparadoArmaSecundaria:"mele"},
+escudo:"No",
+mochila:"",dotes:Object.fromEntries(DOTES_LEVELS.map(l=>[l,""])),tecnicas:Array.from({length:60},()=>({nombre:"",pn:"",recurso:"",notas:""})),pnTotales:0,pnExtras:0,atrExtras:0,raza:"",subclase:"",especializacion:"",escuelaPrincipal:"",descuentoHechizos:false,mcClase:"",mcNivel:0,trasfondoEleccion:"",eleccionAtr:[],trasfondoAtrLibre:"",defectos2:"",compOverride:{},elegidas:[],mejoras:Array.from({length:20},()=>({nombre:"",duracion:"",notas:""})),aflicciones:Object.fromEntries(AFFLICTIONS.map(a=>[a,{cantidad:"",duracion:"",restante:""}])),estadosAlterados:Object.fromEntries(STATUS_EFFECTS.map(s=>[s,{cantidad:"",duracion:"",restante:""}])),resistencias:Object.fromEntries(RESISTANCES.map(r=>[r,""])),caUd:"",temple:"",notas:"",initTracker:{criaturas:[],ronda:1}}}
+
+let characters=[],activeCharId=null,currentTab="general",showManager=false;
+let newCri={nombre:"",iniciativa:"",pvTotal:"",paTotal:""};
+let iniPending={};
+let tecExtra=3,tecOpen={},respMin=30,reposoSeguro=false,_scrollTopNext=false;
+let DATOS=null,datosErr=null,verTodo={tec:false,hec:false},pickOpen={};
+const NIVC=["Sin Practicar","Practicado","Entrenado","Experto"];
+const ixC=n=>Math.max(0,NIVC.indexOf(n));
+const NIV2KEY={"Sin Practicar":"sinPracticar","Practicado":"practicado","Entrenado":"entrenado","Experto":"experto"};
+
+/* Apilamiento: manda el otorgamiento más alto; cada adicional sube 1; tope Experto; nunca baja. */
+function apilar(otorgs){
+  if(!otorgs.length)return NIVC[0];
+  const base=Math.max(...otorgs.map(o=>ixC(o.nivel)));
+  return NIVC[Math.max(base,Math.min(base+otorgs.length-1,ixC("Experto")))];
+}
+/* Multiclase: todo llega Practicado; nv3 restaura Entrenado; nv5 restaura Experto. Nunca sobre el original. */
+function mcNivel(orig,nivelEnClase){
+  if(!nivelEnClase||nivelEnClase<1)return null;
+  const permitido = nivelEnClase>=5?ixC("Experto") : nivelEnClase>=3?ixC("Entrenado") : ixC("Practicado");
+  return NIVC[Math.min(ixC(orig),permitido)];
+}
+const dGet=(cat,nom)=>!DATOS||!nom?null:(DATOS[cat]||[]).find(x=>x.nombre===nom)||null;
+
+/* Reúne TODOS los otorgamientos de competencia del personaje, con su fuente. */
+function otorgamientos(ch){
+  const out=[],add=(hab,nivel,fuente)=>{if(hab&&nivel)out.push({habilidad:hab,nivel,fuente});};
+  const esp=dGet("especies",ch.especie), raz=dGet("razas",ch.raza),
+        cla=dGet("clases",ch.clase),     tra=dGet("trasfondos",ch.trasfondo);
+  (esp?.competencias||[]).forEach(c=>add(c.nombre,c.nivel,"Especie"));
+  (raz?.competencias||[]).forEach(c=>add(c.nombre,c.nivel,"Raza"));
+  (cla?.competencias||[]).forEach(c=>add(c.habilidad,c.nivel,"Clase"));
+  (tra?.competencias||[]).forEach(c=>add(c.habilidad,c.nivel,"Trasfondo"));
+  const mc=dGet("clases",ch.mcClase), mcn=parseInt(ch.mcNivel)||0;
+  if(mc&&mcn>0)(mc.competencias||[]).forEach(c=>{
+    const n=mcNivel(c.nivel,mcn); if(n)add(c.habilidad,n,"Multiclase");
+  });
+  return out;
+}
+/* Competencia efectiva por habilidad + de dónde viene (para el tooltip). */
+function compsEfectivas(ch){
+  const m={};
+  otorgamientos(ch).forEach(o=>{(m[o.habilidad]=m[o.habilidad]||[]).push(o)});
+  const r={};
+  for(const hab in m) r[hab]={nivel:apilar(m[hab]),fuentes:m[hab]};
+  return r;
+}
+/* Bonos de atributo automáticos (especie + raza + clase + trasfondo + multiclase + penalizaciones). */
+function bonosAuto(ch){
+  const t={},sum=(o,f)=>{for(const k in(o||{}))t[k]=(t[k]||0)+o[k]};
+  sum(dGet("especies",ch.especie)?.bonosAtributo);
+  sum(dGet("especies",ch.especie)?.penalizacionAtributo);
+  sum(dGet("razas",ch.raza)?.bonosAtributo);
+  sum(dGet("clases",ch.clase)?.bonosAtributo);
+  sum(dGet("trasfondos",ch.trasfondo)?.bonosAtributo);
+  if(ch.mcClase)sum(dGet("clases",ch.mcClase)?.bonosAtributo);
+  const el=dGet("especies",ch.especie)?.bonosALibreEleccion;
+  if(el)(ch.eleccionAtr||[]).slice(0,el.cantidad).forEach(a=>{if(a)t[a]=(t[a]||0)+el.valor});
+  const tl=dGet("trasfondos",ch.trasfondo)?.bonosALibreEleccion;
+  if(tl&&ch.trasfondoAtrLibre)t[ch.trasfondoAtrLibre]=(t[ch.trasfondoAtrLibre]||0)+tl.valor;
+  if(ch.trasfondoEleccion){const tr=dGet("trasfondos",ch.trasfondo);
+    (tr?.eleccionAtributo||[]).filter(x=>x.atributo===ch.trasfondoEleccion)
+      .forEach(x=>t[x.atributo]=(t[x.atributo]||0)+x.valor);}
+  return t;
+}
+const ATRKEYS=["FUE","AGI","CON","INT","VOL","CM","CD"];
+/* Solo los 7 atributos cuentan para el presupuesto; AM (Afinidad Mágica) va aparte. */
+const totalBonos=ch=>ATRKEYS.reduce((s,k)=>s+(bonosAuto(ch)[k]||0),0);
+const bonoAM=ch=>bonosAuto(ch).AM||0;
+
+/* Descuento de PN: técnica de especialización que abarata hechizos de tu escuela principal. */
+/* Todas las escuelas a las que el personaje tiene acceso, con su origen. */
+function escuelasAcceso(ch){
+  if(!DATOS)return [];
+  const out=[],add=(e,f)=>{if(e&&!out.some(x=>x.escuela===e))out.push({escuela:e,fuente:f})};
+  const base=DATOS.escuelaBase?.[ch.clase];
+  if(base&&base!=="__disciplina__")add(base,"Clase");
+  if(ch.subclase)add(DATOS.escuelaSubclase?.[ch.clase+"|"+ch.subclase],"Subclase");
+  if(ch.especializacion)(DATOS.accesoExtra?.[ch.clase+"|"+ch.especializacion]||[]).forEach(e=>add(e,ch.especializacion));
+  if(ch.subclase)(DATOS.accesoExtra?.[ch.clase+"|"+ch.subclase]||[]).forEach(e=>add(e,ch.subclase));
+  // técnicas elegidas que otorgan acceso (p.ej. Hechicero Innato)
+  (ch.elegidas||[]).forEach(id=>(DATOS.accesoTecnica?.[id]||[]).forEach(e=>add(e,id.split("|")[1])));
+  // Mago: sus disciplinas definen principal/secundaria/complementaria
+  const cla=dGet("clases",ch.clase),mg=cla?.especializacion?.magias?.[ch.especializacion];
+  if(mg){
+    (escuelasPrincipales(ch)).forEach(e=>add(e,"Principal"));
+    (mg.Secundaria?.escuelas||[]).forEach(e=>add(e,"Secundaria"));
+    (mg.Complementaria?.escuelas||[]).forEach(e=>add(e,"Complementaria"));
+  }
+  return out;
+}
+function escuelasPrincipales(ch){
+  const cla=dGet("clases",ch.clase),e=cla?.especializacion;
+  if(!e||!e.magias||!ch.especializacion)return [];
+  const mg=e.magias[ch.especializacion]; if(!mg?.Principal)return [];
+  const l=mg.Principal.escuelas||[];
+  return mg.Principal.eligeUna ? (ch.escuelaPrincipal?[ch.escuelaPrincipal]:[]) : l;
+}
+const TIERKEY=t=>t.startsWith("Bás")?"B":t.startsWith("Avan")?"A":"M";
+/* Descuentos activos = los que otorgan las técnicas que el personaje ya eligió. */
+function descuentosActivos(ch){
+  if(!DATOS?.descuentosPN)return [];
+  return (ch.elegidas||[]).map(id=>DATOS.descuentosPN[id]).filter(Boolean);
+}
+function pnDe(ch,ent){
+  let pn=ent.pn||0;
+  if(ent.tipo!=="hechizo"||!ent.escuela)return pn;
+  let mejor=0;
+  descuentosActivos(ch).forEach(d=>{
+    if(d.escuelas.length&&!d.escuelas.includes(ent.escuela))return;
+    if(d.tiers.length&&!d.tiers.includes(TIERKEY(ent.tier)))return;
+    if(d.monto>mejor)mejor=d.monto;
+  });
+  return Math.max(1,pn-mejor);
+}
+async function cargarDatos(){
+  try{const r=await fetch("datos.json",{cache:"no-cache"});if(!r.ok)throw 0;DATOS=await r.json();}
+  catch(e){datosErr=true;}
+  render();
+}
+const ICONS={
+ menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+ cerrar:'<path d="m6 6 12 12M18 6 6 18"/>',
+ persona:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/>',
+ escudo:'<path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z"/>',
+ libro:'<path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h13"/>',
+ bolsa:'<path d="M6 8h12l-1 13H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+ destello:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="M19 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2Z"/>',
+ craneo:'<path d="M12 2a8 8 0 0 0-8 8c0 3 1.5 5 3 6v3h10v-3c1.5-1 3-3 3-6a8 8 0 0 0-8-8Z"/><circle cx="9" cy="10" r="1.2"/><circle cx="15" cy="10" r="1.2"/>',
+ rayo:'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/>',
+ pluma:'<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+ basura:'<path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13h8l1-13M10 11v6M14 11v6"/>',
+ exportar:'<path d="M12 15V4m0 0 4 4m-4-4L8 8M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/>',
+ importar:'<path d="M12 4v11m0 0 4-4m-4 4-4-4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/>',
+ copiar:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+ guardar:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+ dado:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.3" cy="8.3" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="15.7" cy="15.7" r="1.2" fill="currentColor"/>',
+ taza:'<path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17M4 9h13v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9ZM8 3v2M12 3v2"/>',
+ luna:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>',
+ casa:'<path d="M3 10.5 12 3l9 7.5M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/>',
+ reiniciar:'<path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/>',
+ chev:'<path d="m6 9 6 6 6-6"/>'};
+const ico=(n,s)=>'<svg viewBox="0 0 24 24" width="'+(s||14)+'" height="'+(s||14)+'" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex:none">'+ICONS[n]+'</svg>';
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let liveEls=[];
+function regLive(el,fn){liveEls.push({el,fn})}
+function refreshLive(){for(const{el,fn}of liveEls){const r=fn();if(typeof r==="object"){if(el.textContent!==r.text)el.textContent=r.text;if(r.color&&el.style.color!==r.color)el.style.color=r.color}else{const s=String(r);if(el.textContent!==s)el.textContent=s}}}
+
+function gc(){
+  const ch=characters.find(c=>c.id===activeCharId)||emptyChar();
+  // Migration
+  if(ch.skills){const first=Object.values(ch.skills)[0];if(typeof first!=="object"||first===null||!first.hasOwnProperty("nivel")){ch.skills=Object.fromEntries(SKILLS.map(s=>[s.name,{nivel:"sinPracticar",valor:typeof ch.skills[s.name]==="number"?ch.skills[s.name]:10}]))}}
+  if(!ch.armasComp)ch.armasComp={manoDerecha:{nivel:"sinPracticar",valor:10},manoIzquierda:{nivel:"sinPracticar",valor:10},armaSecundaria:{nivel:"sinPracticar",valor:10},preparadoArmaPrincipal:{nivel:"sinPracticar",valor:10},preparadoArmaSecundaria:{nivel:"sinPracticar",valor:10}};
+  if(!ch.atkMode)ch.atkMode={manoDerecha:"mele",manoIzquierda:"mele",armaSecundaria:"mele",preparadoArmaPrincipal:"mele",preparadoArmaSecundaria:"mele"};
+  if(!ch.escudo)ch.escudo="No";
+  if(!ch.edad)ch.edad="Adulto";
+  if(ch.atrExtras===undefined)ch.atrExtras=0;
+  if(ch.raza===undefined)ch.raza="";
+  if(ch.subclase===undefined)ch.subclase="";
+  if(ch.especializacion===undefined)ch.especializacion="";
+  if(ch.escuelaPrincipal===undefined)ch.escuelaPrincipal="";
+  if(ch.descuentoHechizos===undefined)ch.descuentoHechizos=false;
+  if(ch.mcClase===undefined)ch.mcClase="";
+  if(ch.mcNivel===undefined)ch.mcNivel=0;
+  if(ch.trasfondoEleccion===undefined)ch.trasfondoEleccion="";
+  if(!ch.compOverride)ch.compOverride={};
+  if(!Array.isArray(ch.elegidas))ch.elegidas=[];
+  if(!Array.isArray(ch.eleccionAtr))ch.eleccionAtr=[];
+  if(ch.trasfondoAtrLibre===undefined)ch.trasfondoAtrLibre="";
+  if(ch.defectos2===undefined)ch.defectos2="";
+  if(ch.pnExtras===undefined)ch.pnExtras=0;
+  if(!ch.mods)ch.mods={pvMod:0,amMod:0,iniMod:0,pCritMod:0,dCritMod:0,percPasMod:0,invPasMod:0,perspPasMod:0,bCMMod:0,bCDMod:0,aLigMod:0,aMedMod:0,aPesMod:0};
+  if(!ch.mods.bCMMod&&ch.mods.bCMMod!==0)ch.mods.bCMMod=0;
+  if(!ch.mods.bCDMod&&ch.mods.bCDMod!==0)ch.mods.bCDMod=0;
+  if(!ch.mods.aLigMod&&ch.mods.aLigMod!==0)ch.mods.aLigMod=0;
+  if(!ch.mods.aMedMod&&ch.mods.aMedMod!==0)ch.mods.aMedMod=0;
+  if(!ch.mods.aPesMod&&ch.mods.aPesMod!==0)ch.mods.aPesMod=0;
+  if(!ch.atkMods)ch.atkMods={manoDerecha:0,manoIzquierda:0,armaSecundaria:0,preparadoArmaPrincipal:0,preparadoArmaSecundaria:0};
+  // Expand tecnicas/competencias if old save
+  while(ch.tecnicas&&ch.tecnicas.length<60)ch.tecnicas.push({nombre:"",pn:"",recurso:"",notas:""});
+  while(ch.competencias&&ch.competencias.length<20)ch.competencias.push({nombre:"",valor:""});
+  return ch;
+}
+function save(){try{localStorage.setItem("gaethar_chars",JSON.stringify(characters))}catch{}}
+function load(){try{const s=JSON.parse(localStorage.getItem("gaethar_chars")||"[]");if(s.length>0){characters=s;activeCharId=s[0].id}else{const f=emptyChar();characters=[f];activeCharId=f.id}}catch{const f=emptyChar();characters=[f];activeCharId=f.id}}
+function ss(fn){characters=characters.map(c=>c.id===activeCharId?(typeof fn==="function"?fn(c):{...c,...fn}):c);save();refreshLive()}
+function fu(fn){if(fn)ss(fn);render()}
+
+function mi(getter,setter,opts={}){
+  const el=document.createElement("input");el.type=opts.type||"text";el.className=opts.shrink?"inp-shrink":"inp";
+  el.value=getter()??"";if(opts.placeholder)el.placeholder=opts.placeholder;
+  if(opts.style)Object.assign(el.style,opts.style);
+  if(opts.shrink){
+    el.addEventListener("input",function(){this.style.fontSize=this.value.length>20?"11px":this.value.length>14?"12px":"14px";setter(this.value);save();refreshLive()});
+    el.style.fontSize=((el.value||"").length>20?"11px":(el.value||"").length>14?"12px":"14px");
+  } else {
+    el.addEventListener("input",()=>{setter(el.value);save();refreshLive()});
+  }
+  return el;
+}
+function msel(getter,setter,options,opts={}){
+  const el=document.createElement("select");el.className="sel";
+  if(opts.style)Object.assign(el.style,opts.style);
+  options.forEach(o=>{const opt=document.createElement("option");opt.value=typeof o==="object"?o.value:o;opt.textContent=typeof o==="object"?o.label:o;el.appendChild(opt)});
+  el.value=getter();
+  el.addEventListener("change",()=>{setter(el.value);save();refreshLive()});
+  return el;
+}
+function mta(getter,setter,opts={}){
+  const el=document.createElement("textarea");el.value=getter()??"";
+  if(opts.rows)el.rows=opts.rows;if(opts.placeholder)el.placeholder=opts.placeholder;
+  if(opts.style)Object.assign(el.style,opts.style);
+  el.addEventListener("input",()=>{setter(el.value);save();refreshLive()});
+  return el;
+}
+
+function h(tag,a={},ch=[]){const el=document.createElement(tag);if(a.class)el.className=a.class;if(a.style)Object.assign(el.style,a.style);if(a.text!=null)el.textContent=a.text;if(a.html)el.innerHTML=a.html;if(a.onclick)el.addEventListener("click",a.onclick);if(a.attrs)for(const k in a.attrs)el.setAttribute(k,a.attrs[k]);for(const c of(Array.isArray(ch)?ch:[])){if(c instanceof Node)el.appendChild(c);else if(typeof c==="string")el.appendChild(document.createTextNode(c))}return el}
+function SH(t){return h("div",{class:"sh",text:t})}
+function SB(l,valueFn,s){
+  const d=h("div",{class:"sb"},[h("div",{class:"sb-label",text:l})]);
+  const vEl=h("div",{class:"sb-val"});
+  if(typeof valueFn==="function"){vEl.textContent=String(valueFn());regLive(vEl,()=>String(valueFn()))}else{vEl.textContent=String(valueFn)}
+  d.appendChild(vEl);if(s)d.appendChild(h("div",{class:"sb-sub",text:s}));return d;
+}
+function modRow(label,modKey){
+  const row=h("div",{class:"mod-row"});
+  row.appendChild(h("span",{class:"mod-label",text:"± "+label}));
+  row.appendChild(mi(()=>gc().mods[modKey]||0,v=>ss(c=>({...c,mods:{...c.mods,[modKey]:parseInt(v)||0}})),{type:"number",style:{width:"55px",textAlign:"center"}}));
+  return row;
+}
+
+function addNew(){const n=emptyChar();n.nombre="Nuevo Personaje";characters.push(n);activeCharId=n.id;showManager=false;save();render()}
+function resetChar(){if(!confirm("¿Limpiar todos los campos del personaje actual?"))return;const old=gc();const fresh=emptyChar();fresh.id=old.id;characters=characters.map(c=>c.id===activeCharId?fresh:c);save();render()}
+function delChar(id){if(characters.length<=1)return;characters=characters.filter(c=>c.id!==id);if(activeCharId===id)activeCharId=characters[0].id;save();render()}
+function dupChar(id){const o=characters.find(c=>c.id===id);if(!o)return;characters.push({...JSON.parse(JSON.stringify(o)),id:uid(),nombre:o.nombre+" (copia)"});save();render()}
+function expChar(id){const c=characters.find(x=>x.id===id);if(!c)return;const b=new Blob([JSON.stringify({schemaVersion:1,...c},null,2)],{type:"application/json"});const u=URL.createObjectURL(b);const l=document.createElement("a");l.href=u;l.download=(c.nombre||"personaje")+".gaethar.json";l.click();URL.revokeObjectURL(u)}
+function impChar(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);const list=Array.isArray(d)?d:(d&&Array.isArray(d.characters)?d.characters:[d]);if(!list.length)throw 0;list.forEach(x=>{const n={...emptyChar(),...x,id:uid()};delete n.schemaVersion;delete n.exportedAt;characters.push(n);activeCharId=n.id});showManager=false;save();render()}catch{alert("Error al importar")}};r.readAsText(f);e.target.value=""}
+function expAll(){const b=new Blob([JSON.stringify({schemaVersion:1,exportedAt:new Date().toISOString(),characters},null,2)],{type:"application/json"});const u=URL.createObjectURL(b);const l=document.createElement("a");l.href=u;l.download="gaethar_respaldo_"+new Date().toISOString().slice(0,10)+".json";l.click();URL.revokeObjectURL(u);try{localStorage.setItem("gaethar_lastBackup",String(Date.now()))}catch{}render()}
+
+function getSkillVal(ch,name){const sk=ch.skills?.[name];return typeof sk==="object"?parseInt(sk.valor)||0:parseInt(sk)||0}
+
+function calc(){
+  /* Todo lo derivado se calcula con Actual: es el campo que el jugador edita
+     y donde entran los buffs y debuffs de la partida. */
+  const ch=gc(),a=ch.attrsActual,ab=ch.attrs,niv=parseInt(ch.nivel)||1,m=ch.mods||{};
+  const pvBase=(niv*5)+(a.CON||0),pv=pvBase+(parseInt(m.pvMod)||0);
+  const afMagBase=(a.INT||0)+(DATOS?bonoAM(ch):0),afMag=afMagBase+(parseInt(m.amMod)||0);
+  const paMax=Math.max(5,Math.min(10,rd((a.CON||0)/10)));
+  const rec=a.VOL||0;
+  const iniBase=a.AGI||0,ini=iniBase+(parseInt(m.iniMod)||0);
+  const tenso=rd((a.VOL||0)/10),estresado=rd((a.VOL||0)/5);
+  const paTot=ATTRIBUTES.reduce((s,at)=>s+(ab[at.key]||0),0);
+  const bCMBase=rd((a.AGI||0)/10),bCM=bCMBase+(parseInt(m.bCMMod)||0);
+  const bCDBase=rd((a.AGI||0)/5),bCD=bCDBase+(parseInt(m.bCDMod)||0);
+  const pCritBase=rd((a.AGI||0)/10)+5,pCrit=pCritBase+(parseInt(m.pCritMod)||0);
+  const dCritBase=rd((a.AGI||0)/5),dCrit=dCritBase+(parseInt(m.dCritMod)||0);
+  const shieldBonus=ch.escudo==="Ligero"?5:ch.escudo==="Pesado"?10:0;
+  const aLig=rd((a.CM||0)/10)+rd((a.AGI||0)/5)+shieldBonus+(parseInt(m.aLigMod)||0);
+  const aMed=rd((a.CM||0)/10)+rd((a.AGI||0)/10)+shieldBonus+(parseInt(m.aMedMod)||0);
+  const aPes=rd((a.CM||0)/10)+shieldBonus+(parseInt(m.aPesMod)||0);
+  const pvR=pv-(parseInt(ch.stats.pvGast)||0),amR=afMag-(parseInt(ch.stats.amGast)||0),paR=paMax-(parseInt(ch.stats.paGast)||0),recR=rec-(parseInt(ch.stats.recursoGast)||0);
+  const pnTN=parseInt(ch.pnTotales)||0,pnX=parseInt(ch.pnExtras)||0,pnU=(ch.tecnicas||[]).reduce((s,t)=>s+(parseInt(t.pn)||0),0);
+  // Pasivas: 50 - ATTR + competencia + mod
+  const percComp=getSkillVal(ch,"Percepción"),invComp=getSkillVal(ch,"Investigación"),perspComp=getSkillVal(ch,"Perspicacia");
+  const percPas=50-(a.INT||0)+percComp+(parseInt(m.percPasMod)||0);
+  const invPas=50-(a.INT||0)+invComp+(parseInt(m.invPasMod)||0);
+  const perspPas=50-(a.VOL||0)+perspComp+(parseInt(m.perspPasMod)||0);
+  return{pv,pvBase,afMag,afMagBase,paMax,rec,ini,iniBase,tenso,estresado,paTot,bCM,bCD,pCrit,pCritBase,dCrit,dCritBase,aLig,aMed,aPes,pvR,amR,paR,recR,pnTN,pnX,pnU,pnElegidas:(function(){if(!DATOS)return 0;
+    return (ch.elegidas||[]).reduce((s,id)=>{const [t,n]=id.split("|");
+      const e=DATOS.entradas.find(x=>x.tipo===t&&x.nombre===n);return s+(e?pnDe(ch,e):0)},0)})(),
+  pnR:pnTN+pnX-pnU-(function(){if(!DATOS)return 0;
+    return (ch.elegidas||[]).reduce((s,id)=>{const [t,n]=id.split("|");
+      const e=DATOS.entradas.find(x=>x.tipo===t&&x.nombre===n);return s+(e?pnDe(ch,e):0)},0)})(),shieldBonus,percPas,invPas,perspPas};
+}
+
+function updCri(id,changes){fu(ch=>{const t=ch.initTracker||{criaturas:[],ronda:1};return{...ch,initTracker:{...t,criaturas:t.criaturas.map(c=>c.id===id?{...c,...changes}:c).sort((a,b)=>b.iniAct-a.iniAct)}}})}
+function updCriSilent(id,changes){characters=characters.map(ch=>{if(ch.id!==activeCharId)return ch;const t=ch.initTracker||{criaturas:[],ronda:1};return{...ch,initTracker:{...t,criaturas:t.criaturas.map(c=>c.id===id?{...c,...changes}:c)}}});save()}
+function getWeaponAtk(ch,slot){const comp=ch.armasComp?.[slot];const val=parseInt(comp?.valor)||0;const mode=ch.atkMode?.[slot]||"mele";const c=calc();const atkMod=parseInt(ch.atkMods?.[slot])||0;return val-(mode==="mele"?c.bCM:c.bCD)+atkMod}
+
+// ─── RENDER ───
+function renderGeneral(){
+  const ch=gc(),f=document.createDocumentFragment();
+  f.appendChild(SH("Información del Personaje"));
+  const g1=h("div",{class:"form-grid",style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}});
+  const lbl=t=>h("div",{text:t,style:{fontSize:"11px",color:"var(--textDim)",marginBottom:"2px",fontFamily:"var(--fd)",letterSpacing:"1px"}});
+  {const d=h("div");d.appendChild(lbl("Nombre"));d.appendChild(mi(()=>ch.nombre,v=>ss(c=>({...c,nombre:v})),{shrink:true}));g1.appendChild(d);}
+
+  if(DATOS){
+    // opciones de un select con "(libre)" al inicio
+    const opc=(arr,vacio)=>[{value:"",label:vacio}].concat(arr.map(x=>({value:x,label:x})));
+    const selCampo=(titulo,campo,arr,vacio,onch)=>{
+      const d=h("div");d.appendChild(lbl(titulo));
+      d.appendChild(msel(()=>ch[campo]||"",v=>{ss(c=>({...c,[campo]:v,...(onch?onch(v,c):{})}));render()},opc(arr,vacio)));
+      g1.appendChild(d);return d;
+    };
+    selCampo("Especie","especie",DATOS.especies.map(x=>x.nombre),"— elegir —",
+      ()=>({raza:""}));   // cambiar especie limpia la raza
+    const razasDe=DATOS.razas.filter(r=>r.especie===ch.especie).map(r=>r.nombre);
+    if(ch.especie) selCampo("Raza","raza",razasDe,"— elegir —");
+    selCampo("Clase","clase",DATOS.clases.map(x=>x.nombre),"— elegir —",
+      ()=>({subclase:"",especializacion:"",escuelaPrincipal:""}));
+    const cla=dGet("clases",ch.clase);
+    if(cla?.subclases?.length) selCampo("Subclase","subclase",cla.subclases,"— elegir —");
+    if(cla?.especializacion) selCampo(cla.especializacion.etiqueta,"especializacion",cla.especializacion.opciones,"— elegir —",()=>({escuelaPrincipal:""}));
+    // Elementalista: la escuela principal es una elección entre varias
+    const mg=cla?.especializacion?.magias?.[ch.especializacion];
+    if(mg?.Principal?.eligeUna) selCampo("Magia Principal","escuelaPrincipal",mg.Principal.escuelas,"— elegir —");
+    selCampo("Trasfondo","trasfondo",DATOS.trasfondos.map(x=>x.nombre),"— elegir —",()=>({trasfondoEleccion:""}));
+    const tra=dGet("trasfondos",ch.trasfondo);
+    if(tra?.eleccionAtributo?.length) selCampo("Bono a elegir","trasfondoEleccion",tra.eleccionAtributo.map(x=>x.atributo),"— elegir —");
+    if(tra?.bonosALibreEleccion)
+      selCampo("Bono (+"+tra.bonosALibreEleccion.valor+")","trasfondoAtrLibre",ATTRIBUTES.map(a=>a.key),"— elegir —");
+    const opDef=[{value:"",label:"— ninguno —"}].concat(DATOS.defectos.map(x=>({value:x.nombre,label:x.nombre})));
+    {const d=h("div");d.appendChild(lbl("Defecto"));
+     d.appendChild(msel(()=>ch.defectos||"",v=>{ss(c=>({...c,defectos:v,...(v?{}:{defectos2:""})}));render()},opDef));g1.appendChild(d);}
+    if(ch.defectos){const d=h("div");d.appendChild(lbl("Segundo defecto"));
+     d.appendChild(msel(()=>ch.defectos2||"",v=>{ss(c=>({...c,defectos2:v}));render()},
+       opDef.filter(o=>o.value!==ch.defectos||o.value==="")));g1.appendChild(d);}
+  } else {
+    [["Especie/Raza","especie"],["Clase","clase"],["Trasfondo","trasfondo"]].forEach(([l,k])=>{
+      const d=h("div");d.appendChild(lbl(l));d.appendChild(mi(()=>ch[k],v=>ss(c=>({...c,[k]:v})),{shrink:true}));g1.appendChild(d)});
+    if(datosErr)g1.appendChild(h("div",{text:"Sin datos.json — captura manual.",style:{fontSize:"10px",color:"var(--textDim)",gridColumn:"1/-1"}}));
+  }
+
+  // ── Bonos de atributo a libre elección (Humanos) ──
+  if(DATOS&&dGet("especies",ch.especie)?.bonosALibreEleccion){
+    const el=dGet("especies",ch.especie).bonosALibreEleccion;
+    const fila=h("div",{style:{gridColumn:"1/-1",display:"flex",gap:"8px",alignItems:"flex-end",flexWrap:"wrap"}});
+    fila.appendChild(h("div",{text:"+"+el.valor+" a "+el.cantidad+" atributos:",style:{fontSize:"11px",color:"var(--textDim)",paddingBottom:"8px"}}));
+    for(let i=0;i<el.cantidad;i++){
+      const d=h("div",{style:{width:"86px"}});
+      d.appendChild(msel(()=>(ch.eleccionAtr||[])[i]||"",v=>{ss(c=>{const a=[...(c.eleccionAtr||[])];a[i]=v;return{...c,eleccionAtr:a}});render()},
+        [{value:"",label:"—"}].concat(ATTRIBUTES.map(a=>({value:a.key,label:a.key})))));
+      fila.appendChild(d);
+    }
+    g1.appendChild(fila);
+  }
+
+  // ── Multiclase ──
+  if(DATOS&&ch.clase){
+    const mcb=h("div",{style:{gridColumn:"1/-1",display:"flex",gap:"8px",alignItems:"flex-end",flexWrap:"wrap",marginTop:"4px"}});
+    const d1=h("div",{style:{flex:"1",minWidth:"130px"}});d1.appendChild(lbl("Multiclase"));
+    d1.appendChild(msel(()=>ch.mcClase||"",v=>{ss(c=>({...c,mcClase:v,mcNivel:v?(parseInt(c.mcNivel)||1):0}));render()},
+      [{value:"",label:"— ninguna —"}].concat(DATOS.clases.filter(x=>x.nombre!==ch.clase).map(x=>({value:x.nombre,label:x.nombre})))));
+    mcb.appendChild(d1);
+    if(ch.mcClase){
+      const d2=h("div",{style:{width:"96px"}});d2.appendChild(lbl("Niv. en ella"));
+      d2.appendChild(msel(()=>String(ch.mcNivel||1),v=>{ss(c=>({...c,mcNivel:parseInt(v)||1}));render()},
+        Array.from({length:10},(_,i)=>({value:String(i+1),label:String(i+1)}))));
+      mcb.appendChild(d2);
+      const tot=(parseInt(ch.nivel)||1)+(parseInt(ch.mcNivel)||0);
+      mcb.appendChild(h("div",{text:"Nivel total: "+tot+(tot>20?"  ⚠ excede 20":""),
+        style:{fontSize:"11px",color:tot>20?"var(--danger)":"var(--textDim)",paddingBottom:"8px"}}));
+    }
+    g1.appendChild(mcb);
+  }
+  f.appendChild(g1);
+  const g2=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px",marginTop:"8px"}});
+  [["Nivel","nivel","level"],["Edad","edad","age"],["Experiencia","experiencia","number"],["Tamaño","tamano"],["Movimiento","velocidad"],["Rec. Racial","pRaciales"],["Defectos","defectos"]].forEach(([l,k,t])=>{const d=h("div");d.appendChild(h("div",{text:l,style:{fontSize:"11px",color:"var(--textDim)",marginBottom:"2px",fontFamily:"var(--fd)",letterSpacing:"1px"}}));let ctrl;if(t==="level"){ctrl=msel(()=>String(ch.nivel||1),v=>{ss(c=>({...c,nivel:parseInt(v)||1}));render()},Array.from({length:20},(_,i)=>({value:String(i+1),label:String(i+1)})));}else if(t==="age"){ctrl=msel(()=>ch.edad||"Adulto",v=>{ss(c=>({...c,edad:v}));render()},["Joven","Adulto","Anciano"]);}else{ctrl=mi(()=>ch[k],v=>ss(c=>({...c,[k]:v})),{type:t||"text"});}d.appendChild(ctrl);g2.appendChild(d)});
+  f.appendChild(g2);
+
+  f.appendChild(SH("Atributos"));
+  const tbl=document.createElement("table");tbl.innerHTML='<thead><tr><th>Atributo</th><th>Base</th>'+(DATOS?'<th style="text-align:center">Bono</th>':'')+'<th>Actual</th></tr></thead>';
+  const tb=document.createElement("tbody");
+  ATTRIBUTES.forEach(at=>{const tr=document.createElement("tr");const td1=document.createElement("td");td1.innerHTML='<span style="color:var(--gold);font-family:var(--fd);font-size:12px">'+at.label+'</span> <span style="color:var(--textDim);font-size:11px">('+at.key+')</span>';const td2=document.createElement("td");td2.style.textAlign="center";td2.appendChild(mi(()=>ch.attrs[at.key],v=>ss(c=>({...c,attrs:{...c.attrs,[at.key]:parseInt(v)||0}})),{type:"number",style:{textAlign:"center",width:"60px"}}));const td3=document.createElement("td");td3.style.textAlign="center";td3.appendChild(mi(()=>ch.attrsActual[at.key],v=>ss(c=>({...c,attrsActual:{...c.attrsActual,[at.key]:parseInt(v)||0}})),{type:"number",style:{textAlign:"center",width:"60px"}}));let tdb=null;
+    if(DATOS){tdb=document.createElement("td");tdb.style.textAlign="center";
+      const b=bonosAuto(ch)[at.key]||0;
+      tdb.innerHTML='<span style="font-family:var(--fd);font-size:13px;color:'+(b>0?"var(--gold)":b<0?"var(--danger)":"var(--textDim)")+'">'+(b?(b>0?"+":"")+b:"—")+'</span>';}
+    tdb?tr.append(td1,td2,tdb,td3):tr.append(td1,td2,td3);tb.appendChild(tr)});
+  tbl.appendChild(tb);f.appendChild(tbl);
+  if(DATOS&&totalBonos(gc())!==0)
+    f.appendChild(h("button",{class:"btn-ghost",html:ico("destello",13)+" Copiar Base + Bono a Actual",
+      attrs:{title:"Rellena Actual con la suma. Después lo ajustas libremente para buffs y debuffs."},
+      style:{marginTop:"6px"},onclick:()=>{ss(c=>{const b=bonosAuto(c),na={...c.attrsActual};
+        ATRKEYS.forEach(k=>na[k]=(parseInt(c.attrs[k])||0)+(b[k]||0));
+        return{...c,attrsActual:na}});render()}}));
+  f.appendChild(h("div",{text:"Base = puntos comprados. Bono = lo que dan especie, raza, clase y trasfondo. Actual es el valor real que usan todos los cálculos, y ahí entran los buffs y debuffs de la partida.",
+    style:{fontSize:"10px",color:"var(--textDim)",margin:"6px 0",lineHeight:"1.5"}}));
+  const budBox=h("div",{style:{display:"flex",gap:"8px",marginTop:"10px",padding:"10px 12px",background:"rgba(203,169,79,.07)",border:"1px solid var(--goldDim)",borderRadius:"6px",justifyContent:"space-around",textAlign:"center"}});
+  function budCell(label,fn){const d=h("div");d.appendChild(h("div",{text:label,style:{fontSize:"10px",color:"var(--textDim)",fontFamily:"var(--fd)",letterSpacing:"1px",marginBottom:"2px"}}));const v=h("div",{style:{fontSize:"17px",fontFamily:"var(--fd)",fontWeight:"700"}});const r=fn();if(typeof r==="object"){v.textContent=r.text;v.style.color=r.color;}else{v.textContent=String(r);v.style.color="var(--goldBright)";}regLive(v,fn);d.appendChild(v);return d;}
+  budBox.appendChild(budCell("Disponibles",()=>String(atrBudget(gc().edad,gc().nivel)+(parseInt(gc().atrExtras)||0))));
+  const exCell=h("div");exCell.appendChild(h("div",{text:"+ Extras",style:{fontSize:"10px",color:"var(--textDim)",fontFamily:"var(--fd)",letterSpacing:"1px",marginBottom:"2px"}}));exCell.appendChild(mi(()=>gc().atrExtras||0,v=>ss({atrExtras:parseInt(v)||0}),{type:"number",style:{width:"58px",textAlign:"center",fontSize:"15px",fontFamily:"var(--fd)"}}));budBox.appendChild(exCell);
+  budBox.appendChild(budCell("Usados",()=>String(calc().paTot)));
+  budBox.appendChild(budCell("Restantes",()=>{const g=gc();const r=atrBudget(g.edad,g.nivel)+(parseInt(g.atrExtras)||0)-calc().paTot;return{text:String(r),color:r<0?"var(--danger)":r===0?"var(--goldBright)":"var(--success)"};}));
+  f.appendChild(budBox);
+
+  f.appendChild(SH("Estadísticas"));
+  f.appendChild(h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"8px"}},[
+    SB("P.V.",()=>{const c=calc();return c.pvR+"/"+c.pv},"(Niv×5)+CON+Mod"),
+    SB("Af. Mágica",()=>{const c=calc();return c.amR+"/"+c.afMag},"INT+Mod"),
+    SB("P.A.",()=>{const c=calc();return c.paR+"/"+c.paMax},"CON/10 (max10 min5)"),
+    SB("Recurso",()=>{const c=calc();return c.recR+"/"+c.rec},"VOL"),
+    SB("Iniciativa",()=>calc().ini,"AGI+Mod"),
+    SB("Estrés",()=>gc().stats.estresActual||0,"actual"),
+  ]));
+  f.appendChild(h("div",{style:{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"8px",marginTop:"8px"}},[SB("Tenso",()=>calc().tenso,"VOL/10"),SB("Estresado",()=>calc().estresado,"VOL/5")]));
+
+  // Modifiers
+  f.appendChild(h("div",{text:"MODIFICADORES (Técnicas/Objetos)",style:{fontSize:"11px",color:"var(--gold)",fontFamily:"var(--fd)",letterSpacing:"1px",marginTop:"16px",marginBottom:"8px"}}));
+  const mg=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px 12px"}});
+  mg.appendChild(modRow("P.V.","pvMod"));
+  mg.appendChild(modRow("Af. Mágica","amMod"));
+  mg.appendChild(modRow("Iniciativa","iniMod"));
+  f.appendChild(mg);
+
+  const gg=h("div",{style:{marginTop:"12px",display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"8px"}});
+  [["Daño","pvGast"],["Af.Mág. Gastados","amGast"],["P.A. Gastados","paGast"],["Recurso Gastado","recursoGast"],["Estrés Actual","estresActual"]].forEach(([l,k])=>{const row=h("div",{style:{display:"flex",alignItems:"center",gap:"6px"}});row.appendChild(h("span",{text:l,style:{fontSize:"11px",color:"var(--textDim)",minWidth:"100px"}}));row.appendChild(mi(()=>ch.stats[k],v=>ss(c=>({...c,stats:{...c.stats,[k]:v}})),{type:"number",style:{textAlign:"center",width:"60px"}}));gg.appendChild(row)});
+  f.appendChild(gg);
+
+  // Descanso
+  const rest=h("div",{style:{display:"flex",gap:"8px",marginTop:"12px",alignItems:"center",flexWrap:"wrap"}});
+  rest.appendChild(h("button",{class:"btn-blue",html:ico("taza")+" Respiro",style:{width:"auto",padding:"8px 14px",fontSize:"12px",display:"inline-flex",alignItems:"center",gap:"6px"},onclick:()=>{
+    const mins=respMin,recG=Math.floor(mins/10)*2;
+    ss(c=>({...c,stats:{...c.stats,recursoGast:Math.max(0,(parseInt(c.stats.recursoGast)||0)-recG),estresActual:Math.max(0,(parseInt(c.stats.estresActual)||0)-(mins>=30?1:0))}}));render()}}));
+  rest.appendChild(msel(()=>String(respMin),v=>{respMin=parseInt(v)||10},[10,20,30,40,50,60].map(n=>({value:String(n),label:n+" min"})),{style:{width:"80px"}}));
+  rest.appendChild(h("button",{class:"btn-blue",html:ico("luna")+" Reposo",style:{width:"auto",padding:"8px 14px",fontSize:"12px",display:"inline-flex",alignItems:"center",gap:"6px"},onclick:()=>{
+    ss(c=>({...c,stats:{...c.stats,pvGast:0,recursoGast:0,paGast:0,estresActual:Math.max(0,(parseInt(c.stats.estresActual)||0)-(reposoSeguro?10:5))}}));render()}}));
+  const segBtn=h("button",{class:"btn-ghost",html:ico("casa")+" lugar seguro",attrs:{"aria-pressed":String(reposoSeguro),title:"El Reposo en lugar seguro reduce el Estrés en 10 en vez de 5"},style:reposoSeguro?{opacity:"1",color:"var(--goldBright)",textShadow:"0 0 6px rgba(240,217,138,.4)"}:{},onclick:()=>{reposoSeguro=!reposoSeguro;render()}});
+  rest.appendChild(segBtn);
+  f.appendChild(rest);
+  f.appendChild(h("div",{text:"Respiro: +2 Recurso por cada 10 min (máx 1 h), −1 Estrés si dura ≥30 min. Reposo: recupera todos los P.V. y Recurso, −5 Estrés (−10 si es en lugar seguro).",style:{fontSize:"10px",color:"var(--textDim)",marginTop:"5px",lineHeight:"1.5"}}));
+
+  // Pasivas
+  f.appendChild(SH("Pasivas"));
+  f.appendChild(h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"8px"}},[
+    SB("Percepción",()=>calc().percPas,"50-INT+Comp+Mod"),
+    SB("Investigación",()=>calc().invPas,"50-INT+Comp+Mod"),
+    SB("Perspicacia",()=>calc().perspPas,"50-VOL+Comp+Mod"),
+  ]));
+  const pmg=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"4px",marginTop:"8px"}});
+  pmg.appendChild(modRow("Percep.","percPasMod"));
+  pmg.appendChild(modRow("Invest.","invPasMod"));
+  pmg.appendChild(modRow("Persp.","perspPasMod"));
+  f.appendChild(pmg);
+  return f;
+}
+
+function renderCombate(){
+  const ch=gc(),f=document.createDocumentFragment();
+  f.appendChild(SH("Ofensivas"));
+  f.appendChild(h("div",{class:"stat-grid stat-grid-4",style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}},[SB("Bonif. CM",()=>calc().bCM,"AGI/10+Mod"),SB("Bonif. CD",()=>calc().bCD,"AGI/5+Mod"),SB("Prob. Crítico",()=>calc().pCrit+"%","(AGI/10)+5+Mod"),SB("Daño Crítico",()=>calc().dCrit,"AGI/5+Mod")]));
+  // Combat modifiers
+  f.appendChild(h("div",{text:"MODIFICADORES COMBATE",style:{fontSize:"11px",color:"var(--gold)",fontFamily:"var(--fd)",letterSpacing:"1px",marginTop:"12px",marginBottom:"8px"}}));
+  const cmg=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px 12px"}});
+  cmg.appendChild(modRow("Bonif. CM","bCMMod"));
+  cmg.appendChild(modRow("Bonif. CD","bCDMod"));
+  cmg.appendChild(modRow("Prob. Crít.","pCritMod"));
+  cmg.appendChild(modRow("Daño Crít.","dCritMod"));
+  f.appendChild(cmg);
+
+  // Equipped weapons
+  f.appendChild(h("div",{text:"EQUIPO ACTUAL",style:{fontSize:"11px",color:"var(--gold)",fontFamily:"var(--fd)",letterSpacing:"1px",marginTop:"16px",marginBottom:"8px"}}));
+  ALL_WEAPON_SLOTS.forEach(ws=>{
+    const nombre=ch.equipo[ws.key]||"";if(!nombre)return;
+    const comp=ch.armasComp?.[ws.key]||{nivel:"sinPracticar",valor:10};
+    const compLabel=COMP_LEVELS.find(c=>c.key===comp.nivel)?.label||"Sin practicar";
+    const card=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 10px",background:"var(--bgInput)",border:"1px solid var(--border)",borderRadius:"4px",marginBottom:"4px"}});
+    card.appendChild(h("div",{html:'<span style="color:var(--textBright);font-size:13px">'+esc(nombre)+'</span><br><span style="color:var(--textDim);font-size:11px">'+ws.label+' • '+compLabel+'</span>'}));
+    const valEl=h("span",{style:{fontSize:"14px",color:"var(--goldBright)",fontFamily:"var(--fd)",fontWeight:"700"}});
+    regLive(valEl,()=>{const v=parseInt(gc().armasComp?.[ws.key]?.valor)||0;return(v>=0?"+":"")+v});
+    valEl.textContent=((parseInt(comp.valor)||0)>=0?"+":"")+(parseInt(comp.valor)||0);
+    card.appendChild(valEl);f.appendChild(card);
+  });
+
+  // Attack calculator
+  f.appendChild(h("div",{text:"CALCULAR ATAQUE",style:{fontSize:"11px",color:"var(--gold)",fontFamily:"var(--fd)",letterSpacing:"1px",marginTop:"16px",marginBottom:"8px"}}));
+  ALL_WEAPON_SLOTS.forEach(ws=>{
+    const nombre=ch.equipo[ws.key]||"";if(!nombre)return;
+    const row=h("div",{class:"atk-row"});
+    row.appendChild(h("span",{text:nombre,style:{fontSize:"13px",color:"var(--textBright)",flex:"1",minWidth:"80px"}}));
+    row.appendChild(msel(()=>ch.atkMode?.[ws.key]||"mele",v=>{ss(c=>({...c,atkMode:{...c.atkMode,[ws.key]:v}}));render()},[{value:"mele",label:"Mele"},{value:"distancia",label:"Distancia"}],{style:{width:"90px"}}));
+    row.appendChild(mi(()=>ch.atkMods?.[ws.key]||0,v=>{ss(c=>({...c,atkMods:{...c.atkMods,[ws.key]:parseInt(v)||0}}))},{type:"number",style:{width:"50px",textAlign:"center"},placeholder:"±"}));
+    const resEl=h("span",{class:"atk-result"});
+    regLive(resEl,()=>{const r=getWeaponAtk(gc(),ws.key);return{text:(r>=0?"+":"")+r,color:r<=0?"var(--success)":"var(--danger)"}});
+    const r0=getWeaponAtk(ch,ws.key);resEl.textContent=(r0>=0?"+":"")+r0;resEl.style.color=r0<=0?"var(--success)":"var(--danger)";
+    const rollOut=h("span",{style:{fontSize:"13px",fontFamily:"var(--fd)",flexBasis:"100%",textAlign:"right",minHeight:"0"}});
+    const rollWrap=h("span",{class:"roll-tap",attrs:{role:"button",tabindex:"0","aria-label":"Tirar 1d100 para "+nombre,title:"Tocar para tirar 1d100"}});
+    rollWrap.appendChild(resEl);
+    rollWrap.appendChild(h("span",{html:ico("dado",13),style:{color:"var(--gold)",opacity:".55",display:"inline-flex"}}));
+    rollWrap.addEventListener("click",()=>{
+      const nat=Math.floor(Math.random()*100)+1,mod=getWeaponAtk(gc(),ws.key),tot=nat+mod,crit=nat<=calc().pCrit;
+      rollOut.textContent="d100: "+nat+(mod!==0?(mod>0?" + "+mod:" − "+Math.abs(mod))+" = "+tot:"")+(crit?"  ✦ ¡CRÍTICO!":"");
+      rollOut.style.color=crit?"var(--goldBright)":"var(--textBright)";
+      rollOut.style.textShadow=crit?"0 0 9px rgba(240,217,138,.65)":"none";
+    });
+    row.appendChild(rollWrap);
+    row.appendChild(rollOut);f.appendChild(row);
+  });
+
+  f.appendChild(SH("Defensivas"));
+  const shieldRow=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"12px"}});
+  shieldRow.appendChild(h("span",{text:"Escudo:",style:{fontSize:"12px",color:"var(--textDim)"}}));
+  shieldRow.appendChild(msel(()=>ch.escudo||"No",v=>{ss(c=>({...c,escudo:v}));render()},SHIELD_OPTIONS,{style:{width:"100px"}}));
+  const shieldInfo=h("span",{style:{fontSize:"11px",color:"var(--textDim)"}});
+  regLive(shieldInfo,()=>{const s=gc().escudo;return s==="Ligero"?"(+5 armaduras)":s==="Pesado"?"(+10 armaduras)":""});
+  shieldInfo.textContent=ch.escudo==="Ligero"?"(+5 armaduras)":ch.escudo==="Pesado"?"(+10 armaduras)":"";
+  shieldRow.appendChild(shieldInfo);f.appendChild(shieldRow);
+  f.appendChild(h("div",{class:"stat-grid stat-grid-3",style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"8px"}},[SB("Arm. Ligera",()=>calc().aLig,"CM/10+AGI/5+Mod"),SB("Arm. Mediana",()=>calc().aMed,"CM/10+AGI/10+Mod"),SB("Arm. Pesada",()=>calc().aPes,"CM/10+Mod")]));
+  const amg=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"4px",marginTop:"8px"}});
+  amg.appendChild(modRow("Ligera","aLigMod"));
+  amg.appendChild(modRow("Mediana","aMedMod"));
+  amg.appendChild(modRow("Pesada","aPesMod"));
+  f.appendChild(amg);
+  const ex=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginTop:"8px"}});
+  [["C.A. / U.D.","caUd"],["Temple","temple"]].forEach(([l,k])=>{const d=h("div");d.appendChild(h("div",{text:l,style:{fontSize:"11px",color:"var(--textDim)",marginBottom:"2px"}}));d.appendChild(mi(()=>ch[k]||"",v=>ss(c=>({...c,[k]:v}))));ex.appendChild(d)});
+  f.appendChild(ex);
+  f.appendChild(SH("Resistencias"));
+  const rg=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px"}});
+  RESISTANCES.forEach(r=>{const row=h("div",{style:{display:"flex",alignItems:"center",gap:"6px"}});row.appendChild(h("span",{text:"Res. "+r,style:{fontSize:"12px",color:"var(--text)",minWidth:"70px"}}));row.appendChild(mi(()=>ch.resistencias[r]||"",v=>ss(c=>({...c,resistencias:{...c.resistencias,[r]:v}})),{style:{width:"60px",textAlign:"center"}}));rg.appendChild(row)});
+  f.appendChild(rg);return f;
+}
+
+function renderHabilidades(){
+  const ch=gc(),f=document.createDocumentFragment();
+  f.appendChild(SH("Habilidades"));
+  const efe=DATOS?compsEfectivas(ch):{};
+  if(DATOS)f.appendChild(h("div",{text:"El nivel sugerido viene de tu especie, raza, clase, trasfondo y multiclase. Puedes cambiarlo siempre; si lo haces, se marca como manual.",
+    style:{fontSize:"10px",color:"var(--textDim)",padding:"0 8px 8px",lineHeight:"1.5"}}));
+  SKILLS.forEach(s=>{
+    const auto=efe[s.name], autoKey=auto?NIV2KEY[auto.nivel]:null;
+    const manual=!!ch.compOverride?.[s.name];
+    if(autoKey&&!manual&&ch.skills[s.name]?.nivel!==autoKey){
+      // sincroniza en silencio el nivel sugerido (sin pisar ediciones manuales)
+      const cur=gc();cur.skills[s.name]={nivel:autoKey,valor:COMP_DEFAULTS[autoKey]};
+    }
+    const sk=ch.skills[s.name]||{nivel:"sinPracticar",valor:10};
+    const container=h("div",{style:{padding:"8px",borderBottom:"1px solid rgba(42,42,50,.13)"}});
+    container.appendChild(h("div",{html:'<span style="color:var(--text);font-size:13px">'+s.name+'</span><span style="color:var(--textDim);font-size:11px;margin-left:4px">('+s.attr+')</span>',style:{marginBottom:"4px"}}));
+    const ctrlRow=h("div",{style:{display:"flex",alignItems:"center",gap:"6px"}});
+    ctrlRow.appendChild(msel(()=>sk.nivel,v=>{ss(c=>({...c,skills:{...c.skills,[s.name]:{nivel:v,valor:COMP_DEFAULTS[v]}},
+        compOverride:{...c.compOverride,[s.name]:(autoKey?v!==autoKey:true)||undefined}}));render()},
+      COMP_LEVELS.map(c=>({value:c.key,label:c.label})),{style:{flex:"1"}}));
+    ctrlRow.appendChild(mi(()=>sk.valor,v=>{ss(c=>({...c,skills:{...c.skills,[s.name]:{...c.skills[s.name],valor:parseInt(v)||0}}}))},{type:"number",style:{width:"55px",textAlign:"center"}}));
+    container.appendChild(ctrlRow);
+    if(auto){
+      const det=auto.fuentes.map(x=>x.fuente+" "+x.nivel).join(" + ");
+      container.appendChild(h("div",{
+        html:(manual?'<span style="color:var(--textDim)">✎ manual · sugerido '+auto.nivel+'</span>':'<span style="color:var(--gold)">◆ '+auto.nivel+'</span>')
+             +' <span style="color:var(--textDim)">— '+esc(det)+'</span>',
+        style:{fontSize:"10px",marginTop:"3px",lineHeight:"1.4"}}));
+    }
+    f.appendChild(container);
+  });
+  if(DATOS&&Object.values(ch.compOverride||{}).some(Boolean))
+    f.appendChild(h("button",{class:"btn-ghost",html:ico("reiniciar",13)+" Volver a los valores del manual",
+      style:{marginTop:"8px"},onclick:()=>{ss(c=>({...c,compOverride:{}}));render()}}));
+  f.appendChild(SH("Competencias"));
+  ch.competencias.forEach((comp,i)=>{const row=h("div",{style:{display:"flex",gap:"6px",marginBottom:"4px",alignItems:"center"}});row.appendChild(h("span",{text:String(i+1),style:{fontSize:"11px",color:"var(--textDim)",width:"20px"}}));row.appendChild(mi(()=>comp.nombre,v=>{const a=[...gc().competencias];a[i]={...a[i],nombre:v};ss({competencias:a})},{placeholder:"Competencia",style:{flex:"1"},shrink:true}));row.appendChild(mi(()=>comp.valor,v=>{const a=[...gc().competencias];a[i]={...a[i],valor:v};ss({competencias:a})},{type:"number",style:{width:"55px",textAlign:"center"}}));f.appendChild(row)});
+  f.appendChild(SH("Dotes"));
+  DOTES_LEVELS.forEach(lv=>{const row=h("div",{style:{display:"flex",gap:"8px",marginBottom:"4px",alignItems:"center"}});row.appendChild(h("span",{text:lv,style:{fontSize:"11px",color:"var(--gold)",fontFamily:"var(--fd)",width:"70px",letterSpacing:"1px"}}));row.appendChild(mi(()=>ch.dotes[lv],v=>ss(c=>({...c,dotes:{...c.dotes,[lv]:v}})),{shrink:true}));f.appendChild(row)});
+  return f;
+}
+
+function renderEquipo(){
+  const ch=gc(),f=document.createDocumentFragment();
+  f.appendChild(SH("Equipo - Armadura"));
+  [["Armadura Principal","armaduraPrincipal"],["Faldón","faldon"],["Casco","casco"],["Guantes","guantes"],["Botas","botas"],["Capa","capa"],["Anillo 1","anillo1"],["Anillo 2","anillo2"]].forEach(([l,k])=>{const row=h("div",{style:{display:"flex",gap:"8px",marginBottom:"4px",alignItems:"center"}});row.appendChild(h("span",{text:l,style:{fontSize:"12px",color:"var(--textDim)",width:"110px"}}));row.appendChild(mi(()=>ch.equipo[k]||"",v=>ss(c=>({...c,equipo:{...c.equipo,[k]:v}})),{shrink:true}));f.appendChild(row)});
+  function weaponSection(title,slots){
+    f.appendChild(SH(title));
+    slots.forEach(ws=>{
+      const container=h("div",{style:{marginBottom:"10px"}});
+      const nameRow=h("div",{style:{display:"flex",gap:"8px",marginBottom:"4px",alignItems:"center"}});
+      nameRow.appendChild(h("span",{text:ws.label,style:{fontSize:"12px",color:"var(--textDim)",width:"110px"}}));
+      nameRow.appendChild(mi(()=>ch.equipo[ws.key]||"",v=>ss(c=>({...c,equipo:{...c.equipo,[ws.key]:v}})),{shrink:true}));
+      container.appendChild(nameRow);
+      const comp=ch.armasComp?.[ws.key]||{nivel:"sinPracticar",valor:10};
+      const compRow=h("div",{style:{display:"flex",gap:"6px",alignItems:"center",marginLeft:"118px"}});
+      compRow.appendChild(msel(()=>comp.nivel,v=>{ss(c=>({...c,armasComp:{...c.armasComp,[ws.key]:{nivel:v,valor:COMP_DEFAULTS[v]}}}));render()},COMP_LEVELS.map(c=>({value:c.key,label:c.label})),{style:{flex:"1"}}));
+      compRow.appendChild(mi(()=>comp.valor,v=>{ss(c=>({...c,armasComp:{...c.armasComp,[ws.key]:{...c.armasComp[ws.key],valor:parseInt(v)||0}}}))},{type:"number",style:{width:"55px",textAlign:"center"}}));
+      container.appendChild(compRow);f.appendChild(container);
+    });
+  }
+  weaponSection("Equipo - Armas",WEAPON_SLOTS);
+  weaponSection("Preparados",PREPARED_SLOTS);
+  f.appendChild(SH("Mochila"));
+  f.appendChild(mta(()=>ch.mochila,v=>ss({mochila:v}),{rows:6,placeholder:"Contenido de la mochila...",style:{fontSize:"13px",padding:"10px"}}));
+  return f;
+}
+
+/* Lista filtrada: lo tuyo por clase/subclase (o escuela), o todo con el toggle. */
+function entradasDisponibles(ch,tipo){
+  if(!DATOS)return [];
+  const todo=DATOS.entradas.filter(e=>e.tipo===tipo);
+  if(verTodo[tipo==="tecnica"?"tec":"hec"])return todo;
+  if(tipo==="tecnica"){
+    const cls=[ch.clase,ch.mcClase].filter(Boolean);
+    return todo.filter(e=>cls.includes(e.clase)&&(!e.subclase||e.subclase===ch.subclase));
+  }
+  const permitidas=escuelasAcceso(ch).map(x=>x.escuela);
+  return permitidas.length?todo.filter(e=>permitidas.includes(e.escuela)):[];
+}
+function togglePick(ch,ent){
+  const id=ent.tipo+"|"+ent.nombre;
+  const ya=(ch.elegidas||[]).includes(id);
+  ss(c=>({...c,elegidas:ya?c.elegidas.filter(x=>x!==id):[...c.elegidas,id]}));render();
+}
+function pickerSeccion(ch,tipo,titulo){
+  const f=document.createDocumentFragment(),clave=tipo==="tecnica"?"tec":"hec";
+  const lista=entradasDisponibles(ch,tipo);
+  const cab=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginBottom:"6px"}});
+  cab.appendChild(h("span",{text:titulo+" ("+lista.length+")",style:{fontSize:"12px",color:"var(--gold)",fontFamily:"var(--fd)",letterSpacing:"1px",flex:"1"}}));
+  cab.appendChild(h("button",{class:"btn-ghost",text:verTodo[clave]?"◉ viendo todo":"○ ver todo",
+    attrs:{title:"Muestra también lo que no otorga tu clase o escuela"},
+    style:verTodo[clave]?{opacity:"1",color:"var(--goldBright)"}:{},
+    onclick:()=>{verTodo[clave]=!verTodo[clave];render()}}));
+  cab.appendChild(h("button",{class:"btn-ghost",html:ico(pickOpen[clave]?"chev":"destello",13)+(pickOpen[clave]?" cerrar":" elegir"),
+    onclick:()=>{pickOpen[clave]=!pickOpen[clave];render()}}));
+  f.appendChild(cab);
+  if(!pickOpen[clave])return f;
+  if(!lista.length){
+    f.appendChild(h("div",{text:tipo==="tecnica"?"Elige una clase (y subclase) para ver sus técnicas, o activa «ver todo».":"Elige tu especialización de magia para ver tus hechizos, o activa «ver todo».",
+      style:{fontSize:"11px",color:"var(--textDim)",padding:"8px 0",lineHeight:"1.5"}}));
+    return f;
+  }
+  const cont=h("div",{style:{maxHeight:"340px",overflowY:"auto",border:"1px solid var(--border)",borderRadius:"6px",padding:"6px",marginBottom:"8px"}});
+  let tierPrev=null,clasePrev=null;
+  lista.forEach(e=>{
+    const grupo=(e.clase||e.escuela||"")+(e.subclase?" · "+e.subclase:"");
+    if(grupo!==clasePrev){clasePrev=grupo;tierPrev=null;
+      cont.appendChild(h("div",{text:grupo,style:{fontSize:"10px",color:"var(--gold)",fontFamily:"var(--fd)",letterSpacing:"1px",margin:"8px 0 3px",borderBottom:"1px solid var(--goldDim)",paddingBottom:"2px"}}));}
+    if(e.tier!==tierPrev){tierPrev=e.tier;
+      cont.appendChild(h("div",{text:e.tier,style:{fontSize:"9px",color:"var(--textDim)",margin:"5px 0 2px",letterSpacing:"1px"}}));}
+    const id=e.tipo+"|"+e.nombre, sel=(ch.elegidas||[]).includes(id), pn=pnDe(ch,e);
+    const rebaja=pn<(e.pn||0);
+    const row=h("div",{style:{display:"flex",alignItems:"center",gap:"6px",padding:"5px 4px",borderRadius:"4px",cursor:"pointer",
+      background:sel?"rgba(203,169,79,.10)":"transparent"},onclick:()=>togglePick(ch,e)});
+    row.appendChild(h("span",{text:sel?"◆":"◇",style:{color:sel?"var(--gold)":"var(--textDim)",fontSize:"12px",width:"14px"}}));
+    row.appendChild(h("span",{text:e.nombre,style:{flex:"1",fontSize:"12px",color:sel?"var(--textBright)":"var(--text)"}}));
+    row.appendChild(h("span",{text:e.accion,style:{fontSize:"9px",color:"var(--textDim)",whiteSpace:"nowrap"}}));
+    if(e.costo!=null)row.appendChild(h("span",{text:e.costo+" "+(e.recurso||""),style:{fontSize:"9px",color:"var(--textDim)",whiteSpace:"nowrap"}}));
+    row.appendChild(h("span",{text:pn+" PN",attrs:{title:rebaja?"Descuento por especialización aplicado":""},
+      style:{fontSize:"10px",fontFamily:"var(--fd)",color:rebaja?"var(--goldBright)":"var(--gold)",width:"42px",textAlign:"right"}}));
+    cont.appendChild(row);
+  });
+  f.appendChild(cont);
+  return f;
+}
+
+/* Raciales de especie + raza: no cuestan PN, se otorgan solas. */
+function racialesDe(ch){
+  if(!DATOS)return [];
+  const out=[];
+  const esp=dGet("especies",ch.especie),raz=dGet("razas",ch.raza);
+  (esp?.raciales||[]).forEach(r=>out.push({...r,fuente:ch.especie}));
+  (raz?.raciales||[]).forEach(r=>out.push({...r,fuente:ch.raza}));
+  return out;
+}
+function seccionRaciales(ch){
+  const f=document.createDocumentFragment(),lst=racialesDe(ch);
+  if(!lst.length)return f;
+  f.appendChild(SH("Raciales ("+lst.length+")"));
+  f.appendChild(h("div",{text:"Las otorga tu especie y tu raza. No cuestan P.N.",
+    style:{fontSize:"10px",color:"var(--textDim)",marginBottom:"6px"}}));
+  let fuentePrev=null;
+  lst.forEach(r=>{
+    if(r.fuente!==fuentePrev){fuentePrev=r.fuente;
+      f.appendChild(h("div",{text:r.fuente,style:{fontSize:"10px",color:"var(--gold)",fontFamily:"var(--fd)",letterSpacing:"1px",margin:"8px 0 3px",borderBottom:"1px solid var(--goldDim)",paddingBottom:"2px"}}));}
+    const row=h("div",{style:{display:"flex",alignItems:"center",gap:"6px",padding:"5px 4px",borderBottom:"1px solid rgba(138,106,46,.14)"}});
+    row.appendChild(h("span",{text:"◆",style:{color:"var(--gold)",fontSize:"11px"}}));
+    row.appendChild(h("span",{text:r.nombre,style:{flex:"1",fontSize:"12px",color:"var(--textBright)"}}));
+    if(r.forma)row.appendChild(h("span",{text:"forma "+r.forma,attrs:{title:"Solo disponible en forma "+r.forma},
+      style:{fontSize:"9px",color:"var(--goldBright)",whiteSpace:"nowrap"}}));
+    row.appendChild(h("span",{text:r.accion,style:{fontSize:"9px",color:"var(--textDim)",whiteSpace:"nowrap"}}));
+    if(r.costo!=null)row.appendChild(h("span",{text:r.costo+" "+(r.recurso||""),style:{fontSize:"9px",color:"var(--textDim)",whiteSpace:"nowrap"}}));
+    if(r.salvacion)row.appendChild(h("span",{text:"salv. "+r.salvacion,style:{fontSize:"9px",color:"var(--textDim)"}}));
+    row.appendChild(h("span",{text:"0 PN",style:{fontSize:"10px",fontFamily:"var(--fd)",color:"var(--textDim)",width:"42px",textAlign:"right"}}));
+    f.appendChild(row);
+  });
+  return f;
+}
+
+function renderTecnicas(){
+  const ch=gc(),f=document.createDocumentFragment();
+  f.appendChild(SH("Técnicas y Hechizos"));
+  const pr=h("div",{style:{display:"flex",gap:"8px",marginBottom:"12px"}});
+  const d1=h("div",{style:{flex:"1"}});d1.appendChild(h("div",{text:"PN Totales",style:{fontSize:"11px",color:"var(--textDim)"}}));d1.appendChild(mi(()=>ch.pnTotales,v=>ss({pnTotales:v}),{type:"number",style:{textAlign:"center",width:"100%"}}));pr.appendChild(d1);
+  const d1b=h("div",{style:{flex:"1"}});d1b.appendChild(h("div",{text:"PN Extra",style:{fontSize:"11px",color:"var(--textDim)"}}));d1b.appendChild(mi(()=>ch.pnExtras||0,v=>ss({pnExtras:parseInt(v)||0}),{type:"number",style:{textAlign:"center",width:"100%"}}));pr.appendChild(d1b);
+  const d2=h("div",{style:{flex:"1"}});d2.appendChild(h("div",{text:"PN Restantes",style:{fontSize:"11px",color:"var(--textDim)"}}));
+  const pnBox=h("div",{style:{background:"var(--bgInput)",border:"1px solid var(--border)",borderRadius:"4px",padding:"6px 8px",textAlign:"center",fontSize:"14px",height:"33px",lineHeight:"20px"}});
+  regLive(pnBox,()=>{const c=calc();return{text:String(c.pnR),color:c.pnR<0?"var(--danger)":"var(--goldBright)"}});
+  const c0=calc();pnBox.textContent=String(c0.pnR);pnBox.style.color=c0.pnR<0?"var(--danger)":"var(--goldBright)";
+  d2.appendChild(pnBox);pr.appendChild(d2);f.appendChild(pr);
+  const sug=h("div",{style:{display:"flex",alignItems:"center",gap:"10px",marginBottom:"14px",marginTop:"-6px"}});
+  const sugTxt=h("span",{style:{fontSize:"11px",color:"var(--textDim)"}});
+  const sugFn=()=>{const g=gc();return "Sugerido para "+(g.edad||"Adulto")+" Nv"+clampNiv(g.nivel)+": "+pnSugerido(g.edad,g.nivel)+" P.N.";};
+  sugTxt.textContent=sugFn();regLive(sugTxt,sugFn);
+  const apply=h("button",{class:"btn-blue",text:"Aplicar",style:{width:"auto",padding:"5px 14px",fontSize:"11px",flex:"0 0 auto"},onclick:()=>{const g=gc();ss({pnTotales:pnSugerido(g.edad,g.nivel)});render();}});
+  sug.appendChild(sugTxt);sug.appendChild(apply);f.appendChild(sug);
+  if(DATOS){
+    f.appendChild(seccionRaciales(ch));
+    // panel de escuelas de magia accesibles
+    const acc=escuelasAcceso(ch);
+    if(acc.length||DATOS.escuelaBase?.[ch.clase]){
+      f.appendChild(SH("Escuelas de magia"));
+      if(acc.length){
+        const cont=h("div",{style:{display:"flex",flexWrap:"wrap",gap:"6px",marginBottom:"8px"}});
+        acc.forEach(x=>cont.appendChild(h("span",{
+          html:'<b style="color:var(--goldBright)">'+esc(x.escuela)+'</b> <span style="color:var(--textDim);font-size:9px">'+esc(x.fuente)+'</span>',
+          style:{fontSize:"11px",padding:"4px 9px",border:"1px solid var(--goldDim)",borderRadius:"12px",background:"rgba(203,169,79,.07)"}})));
+        f.appendChild(cont);
+      } else {
+        f.appendChild(h("div",{text:"Elige tu subclase o especialización para definir a qué escuelas tienes acceso.",
+          style:{fontSize:"11px",color:"var(--textDim)",marginBottom:"8px",lineHeight:"1.5"}}));
+      }
+    }
+    f.appendChild(pickerSeccion(ch,"tecnica","Técnicas disponibles"));
+    f.appendChild(pickerSeccion(ch,"hechizo","Hechizos disponibles"));
+    const eleg=(ch.elegidas||[]).map(id=>{const [t,n]=id.split("|");
+      return DATOS.entradas.find(e=>e.tipo===t&&e.nombre===n)}).filter(Boolean);
+    if(eleg.length){
+      f.appendChild(SH("Elegidas ("+eleg.length+")"));
+      const pnUsados=eleg.reduce((s,e)=>s+pnDe(ch,e),0);
+      f.appendChild(h("div",{text:"PN comprometidos en la lista: "+pnUsados,
+        style:{fontSize:"11px",color:"var(--gold)",marginBottom:"6px",fontFamily:"var(--fd)"}}));
+      eleg.forEach(e=>{
+        const row=h("div",{style:{display:"flex",alignItems:"center",gap:"6px",padding:"5px 4px",borderBottom:"1px solid rgba(138,106,46,.14)"}});
+        row.appendChild(h("span",{text:e.nombre,style:{flex:"1",fontSize:"12px",color:"var(--textBright)"}}));
+        row.appendChild(h("span",{text:e.accion+(e.costo!=null?" · "+e.costo+" "+(e.recurso||""):""),style:{fontSize:"9px",color:"var(--textDim)"}}));
+        row.appendChild(h("span",{text:pnDe(ch,e)+" PN",style:{fontSize:"10px",fontFamily:"var(--fd)",color:"var(--gold)"}}));
+        row.appendChild(h("button",{class:"btn-ghost",html:ico("basura",13),style:{color:"var(--danger)"},
+          attrs:{"aria-label":"Quitar "+e.nombre},onclick:()=>togglePick(ch,e)}));
+        f.appendChild(row);
+      });
+      f.appendChild(h("div",{text:"Las descripciones no vienen en el paquete de datos: consúltalas en el manual.",
+        style:{fontSize:"10px",color:"var(--textDim)",marginTop:"6px",lineHeight:"1.5"}}));
+    }
+    const da=descuentosActivos(ch);
+    if(da.length){
+      f.appendChild(h("div",{html:ico("destello",12)+" Descuentos activos: "+
+        da.map(d=>"−"+d.monto+" PN en "+(d.escuelas.join("/")||"tus hechizos")+(d.tiers.length?" ("+d.tiers.map(t=>({B:"Básicos",A:"Avanzados",M:"Maestros"})[t]).join(", ")+")":"")).join(" · "),
+        style:{fontSize:"10px",color:"var(--gold)",marginTop:"10px",padding:"7px 9px",border:"1px solid var(--goldDim)",borderRadius:"6px",lineHeight:"1.5"}}));
+    }
+    f.appendChild(SH("Captura manual"));
+  }
+  const hd=h("div",{style:{display:"grid",gridTemplateColumns:"24px 1fr 50px 60px 30px",gap:"4px",marginBottom:"6px"}});
+  hd.appendChild(h("span"));hd.appendChild(h("span",{class:"col-h",text:"NOMBRE"}));hd.appendChild(h("span",{class:"col-h",text:"PN"}));hd.appendChild(h("span",{class:"col-h",text:"REC."}));hd.appendChild(h("span"));f.appendChild(hd);
+  const tFilled=t=>t&&(t.nombre||t.pn||t.recurso||t.notas);let tBlanks=0;
+  ch.tecnicas.forEach((t,i)=>{
+    if(!tFilled(t)&&!tecOpen[i]){if(tBlanks>=tecExtra)return;tBlanks++;}
+    const row=h("div",{style:{display:"grid",gridTemplateColumns:"24px 1fr 50px 60px 30px",gap:"4px",marginBottom:"3px",alignItems:"center"}});
+    row.appendChild(h("span",{text:String(i+1),style:{fontSize:"11px",color:"var(--textDim)",textAlign:"center"}}));
+    row.appendChild(mi(()=>t.nombre,v=>{const a=[...gc().tecnicas];a[i]={...a[i],nombre:v};ss({tecnicas:a})},{shrink:true}));
+    row.appendChild(mi(()=>t.pn,v=>{const a=[...gc().tecnicas];a[i]={...a[i],pn:v};ss({tecnicas:a})},{style:{textAlign:"center"}}));
+    row.appendChild(mi(()=>t.recurso,v=>{const a=[...gc().tecnicas];a[i]={...a[i],recurso:v};ss({tecnicas:a})},{style:{textAlign:"center"}}));
+    row.appendChild(h("button",{class:"btn-ghost",html:ico(tecOpen[i]?"chev":"pluma",13),style:{height:"30px",justifyContent:"center",padding:"0",opacity:t.notas?"1":".45"},attrs:{"aria-label":"Notas de la técnica "+(i+1)},onclick:()=>{tecOpen[i]=!tecOpen[i];render()}}));
+    f.appendChild(row);
+    if(tecOpen[i])f.appendChild(mta(()=>gc().tecnicas[i].notas||"",v=>{const a=[...gc().tecnicas];a[i]={...a[i],notas:v};ss({tecnicas:a})},{rows:2,placeholder:"Notas de la técnica...",style:{marginBottom:"6px",fontSize:"12px",padding:"8px"}}));
+  });
+  f.appendChild(h("button",{text:"＋ Mostrar 5 filas más",style:{background:"transparent",border:"1px dashed var(--goldDim)",borderRadius:"6px",color:"var(--gold)",padding:"8px",width:"100%",marginTop:"6px",cursor:"pointer",fontFamily:"var(--fd)",fontSize:"11px",letterSpacing:"1px"},onclick:()=>{tecExtra+=5;render()}}));
+  return f;
+}
+
+function renderEstado(){
+  const ch=gc(),f=document.createDocumentFragment();
+  f.appendChild(SH("Mejoras y Detrimentos"));
+  ch.mejoras.forEach((m,i)=>{const row=h("div",{style:{display:"grid",gridTemplateColumns:"24px 1fr 70px",gap:"4px",marginBottom:"3px",alignItems:"center"}});row.appendChild(h("span",{text:String(i+1),style:{fontSize:"11px",color:"var(--textDim)",textAlign:"center"}}));row.appendChild(mi(()=>m.nombre,v=>{const a=[...gc().mejoras];a[i]={...a[i],nombre:v};ss({mejoras:a})},{shrink:true}));row.appendChild(mi(()=>m.duracion,v=>{const a=[...gc().mejoras];a[i]={...a[i],duracion:v};ss({mejoras:a})},{placeholder:"Dur.",style:{textAlign:"center"}}));f.appendChild(row)});
+  function statusGrid(title,items,charKey){
+    f.appendChild(SH(title));
+    const hd=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 55px 60px 60px",gap:"4px",marginBottom:"6px"}});
+    hd.appendChild(h("span",{class:"col-h",text:"NOMBRE",style:{textAlign:"left"}}));hd.appendChild(h("span",{class:"col-h",text:"CANT."}));hd.appendChild(h("span",{class:"col-h",text:"DUR."}));hd.appendChild(h("span",{class:"col-h",text:"REST."}));f.appendChild(hd);
+    items.forEach(nm=>{const row=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 55px 60px 60px",gap:"4px",marginBottom:"3px",alignItems:"center"}});row.appendChild(h("span",{text:nm,style:{fontSize:"12px",color:"var(--text)"}}));["cantidad","duracion","restante"].forEach(fld=>{row.appendChild(mi(()=>gc()[charKey][nm]?.[fld]||"",v=>ss(c=>({...c,[charKey]:{...c[charKey],[nm]:{...c[charKey][nm],[fld]:v}}})),{style:{textAlign:"center",fontSize:"12px"}}))});f.appendChild(row)});
+  }
+  statusGrid("Aflicciones",AFFLICTIONS,"aflicciones");
+  statusGrid("Estados Alterados",STATUS_EFFECTS,"estadosAlterados");
+  return f;
+}
+
+function renderIniciativa(){
+  const ch=gc(),tk=ch.initTracker||{criaturas:[],ronda:1},cris=tk.criaturas||[];
+  const f=document.createDocumentFragment();
+  f.appendChild(SH("Rastreador de Iniciativa"));
+  const rb=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"16px",padding:"10px 14px",background:"rgba(201,162,39,.07)",border:"1px solid var(--goldDim)",borderRadius:"6px",flexWrap:"wrap",gap:"8px"}});
+  const ri=h("div");ri.innerHTML='<span style="font-family:var(--fd);color:var(--gold);font-size:13px;letter-spacing:2px">RONDA </span><span style="font-family:var(--fd);color:var(--goldBright);font-size:22px">'+(tk.ronda||1)+'</span>';
+  rb.appendChild(ri);
+  const rBtns=h("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap"}});
+  rBtns.appendChild(h("button",{text:"Fin de Combate",style:{background:"var(--danger)",border:"none",borderRadius:"6px",color:"#fff",padding:"10px 16px",fontSize:"13px",fontFamily:"var(--fd)",letterSpacing:"1px",cursor:"pointer"},onclick:()=>{iniPending={};fu(ch=>{const t=ch.initTracker||{criaturas:[],ronda:1};return{...ch,initTracker:{...t,ronda:1,criaturas:t.criaturas.map(c=>({...c,iniAct:c.iniBase,paUsd:0,pvDmg:0,buffs:"",debuffs:""})).sort((a,b)=>b.iniAct-a.iniAct)}}})}}));
+  rBtns.appendChild(h("button",{text:"Siguiente Ronda",style:{background:"var(--success)",border:"none",borderRadius:"6px",color:"#fff",padding:"10px 16px",fontSize:"13px",fontFamily:"var(--fd)",letterSpacing:"1px",cursor:"pointer"},onclick:()=>{iniPending={};fu(ch=>{const t=ch.initTracker||{criaturas:[],ronda:1};return{...ch,initTracker:{...t,ronda:(t.ronda||1)+1,criaturas:t.criaturas.map(c=>({...c,iniAct:c.iniBase,paUsd:0})).sort((a,b)=>b.iniAct-a.iniAct)}}})}}));
+  rb.appendChild(rBtns);f.appendChild(rb);
+
+  const ab=h("div",{style:{background:"var(--bgCard)",border:"1px solid var(--border)",borderRadius:"8px",padding:"14px",marginBottom:"16px"}});
+  ab.appendChild(h("div",{text:"AGREGAR CRIATURA",style:{fontFamily:"var(--fd)",color:"var(--gold)",fontSize:"12px",letterSpacing:"1px",marginBottom:"10px"}}));
+  ab.appendChild(h("div",{style:{marginBottom:"8px"}},[mi(()=>newCri.nombre,v=>{newCri.nombre=v},{placeholder:"Nombre de la criatura"})]));
+  const cg=h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px",marginBottom:"10px"}});
+  [["Iniciativa","iniciativa"],["PV Total","pvTotal"],["PA Total","paTotal"]].forEach(([l,k])=>{const d=h("div");d.appendChild(h("div",{text:l,style:{fontSize:"10px",color:"var(--textDim)",marginBottom:"2px"}}));d.appendChild(mi(()=>newCri[k],v=>{newCri[k]=v},{type:"number",placeholder:"0",style:{textAlign:"center",width:"100%"}}));cg.appendChild(d)});
+  ab.appendChild(cg);
+  ab.appendChild(h("button",{class:"btn-blue",text:"+ Agregar Criatura",onclick:()=>{if(!newCri.nombre)return;const cr={id:uid(),nombre:newCri.nombre,iniBase:parseInt(newCri.iniciativa)||0,iniAct:parseInt(newCri.iniciativa)||0,pvTot:parseInt(newCri.pvTotal)||0,pvDmg:0,paTot:parseInt(newCri.paTotal)||0,paUsd:0,buffs:"",debuffs:""};fu(ch=>{const t=ch.initTracker||{criaturas:[],ronda:1};return{...ch,initTracker:{...t,criaturas:[...t.criaturas,cr].sort((a,b)=>b.iniAct-a.iniAct)}}});newCri={nombre:"",iniciativa:"",pvTotal:"",paTotal:""}}}));
+  f.appendChild(ab);
+
+  cris.forEach((cr,idx)=>{
+    const pvLeft=cr.pvTot-cr.pvDmg,paLeft=cr.paTot-cr.paUsd,isFirst=idx===0;
+    const hasPend=iniPending[cr.id]!==undefined;
+    const card=h("div",{style:{background:"var(--bgCard)",border:"1px solid "+(isFirst?"var(--success)":"var(--border)"),borderRadius:"8px",padding:"14px",marginBottom:"10px"}});
+    const hdr=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}});
+    const hl=h("div",{style:{display:"flex",alignItems:"center",gap:"8px"}});
+    hl.appendChild(h("span",{text:String(idx+1),style:{fontFamily:"var(--fd)",color:"var(--textBright)",fontSize:"15px"}}));
+    if(isFirst)hl.appendChild(h("span",{text:"TURNO ACTUAL",style:{background:"var(--success)",color:"#fff",fontSize:"10px",padding:"2px 8px",borderRadius:"4px",fontFamily:"var(--fd)",letterSpacing:"1px"}}));
+    hl.appendChild(h("span",{text:cr.nombre,style:{fontFamily:"var(--fd)",color:"var(--textBright)",fontSize:"14px"}}));
+    hdr.appendChild(hl);hdr.appendChild(h("button",{class:"btn-ghost",html:ico("basura",16),attrs:{"aria-label":"Eliminar criatura "+cr.nombre,title:"Eliminar criatura"},style:{color:"var(--danger)"},onclick:()=>{delete iniPending[cr.id];fu(ch=>{const t=ch.initTracker||{criaturas:[],ronda:1};return{...ch,initTracker:{...t,criaturas:t.criaturas.filter(c=>c.id!==cr.id)}}})}}));
+    card.appendChild(hdr);
+
+    const is=h("div",{style:{marginBottom:"12px"}});is.appendChild(h("div",{text:"Iniciativa",style:{fontSize:"11px",color:"var(--textDim)",fontFamily:"var(--fd)",letterSpacing:"1px",marginBottom:"4px"}}));
+    const ir=h("div",{style:{display:"flex",alignItems:"center",gap:"12px",flexWrap:"wrap"}});
+    ir.appendChild(h("div",{html:'<div style="font-size:10px;color:var(--textDim)">Base</div><div style="font-size:18px;color:var(--blue);font-family:var(--fd)">'+cr.iniBase+'</div>',style:{textAlign:"center"}}));
+    ir.appendChild(h("div",{html:'<div style="font-size:10px;color:var(--textDim)">Actual</div><div style="font-size:18px;color:var(--goldBright);font-family:var(--fd)">'+cr.iniAct+'</div>',style:{textAlign:"center"}}));
+    if(hasPend){const pendVal=iniPending[cr.id];ir.appendChild(h("div",{style:{textAlign:"center"}},[h("div",{text:"Preview",style:{fontSize:"10px",color:"var(--gold)"}}),h("div",{text:String(pendVal),style:{fontSize:"18px",color:"var(--gold)",fontFamily:"var(--fd)",fontWeight:"700"}})]))}
+    const ib=h("div",{style:{display:"flex",gap:"4px",marginLeft:"8px"}});
+    ib.appendChild(h("button",{text:"▼▼",style:{background:"var(--danger)",border:"none",borderRadius:"4px",color:"#fff",width:"36px",height:"32px",fontSize:"11px",cursor:"pointer"},onclick:()=>{iniPending[cr.id]=(iniPending[cr.id]!==undefined?iniPending[cr.id]:cr.iniAct)-10;render()}}));
+    ib.appendChild(h("button",{text:"▼",style:{background:"var(--danger)",border:"none",borderRadius:"4px",color:"#fff",width:"30px",height:"32px",fontSize:"14px",cursor:"pointer"},onclick:()=>{iniPending[cr.id]=(iniPending[cr.id]!==undefined?iniPending[cr.id]:cr.iniAct)-1;render()}}));
+    ib.appendChild(h("button",{text:"▲",style:{background:"var(--success)",border:"none",borderRadius:"4px",color:"#fff",width:"30px",height:"32px",fontSize:"14px",cursor:"pointer"},onclick:()=>{iniPending[cr.id]=(iniPending[cr.id]!==undefined?iniPending[cr.id]:cr.iniAct)+1;render()}}));
+    ib.appendChild(h("button",{text:"▲▲",style:{background:"var(--success)",border:"none",borderRadius:"4px",color:"#fff",width:"36px",height:"32px",fontSize:"11px",cursor:"pointer"},onclick:()=>{iniPending[cr.id]=(iniPending[cr.id]!==undefined?iniPending[cr.id]:cr.iniAct)+10;render()}}));
+    ib.appendChild(h("button",{text:"Reset",style:{background:"var(--blue)",border:"none",borderRadius:"4px",color:"#fff",padding:"0 10px",height:"32px",fontSize:"11px",cursor:"pointer",fontFamily:"var(--fd)"},onclick:()=>{iniPending[cr.id]=cr.iniBase;render()}}));
+    ir.appendChild(ib);
+    if(hasPend){ir.appendChild(h("button",{text:"✔ Confirmar",style:{background:"var(--gold)",border:"none",borderRadius:"4px",color:"var(--bg)",padding:"6px 14px",height:"32px",fontSize:"12px",cursor:"pointer",fontFamily:"var(--fd)",letterSpacing:"1px",fontWeight:"700"},onclick:()=>{const nv=iniPending[cr.id];delete iniPending[cr.id];updCri(cr.id,{iniAct:nv})}}));ir.appendChild(h("button",{text:"✕",style:{background:"transparent",border:"1px solid var(--border)",borderRadius:"4px",color:"var(--textDim)",padding:"6px 10px",height:"32px",fontSize:"12px",cursor:"pointer"},onclick:()=>{delete iniPending[cr.id];render()}}))}
+    is.appendChild(ir);card.appendChild(is);
+
+    const ps=h("div",{style:{marginBottom:"12px",borderTop:"1px solid var(--border)",paddingTop:"10px"}});ps.appendChild(h("div",{text:"Puntos de Vida",style:{fontSize:"11px",color:"var(--textDim)",fontFamily:"var(--fd)",letterSpacing:"1px",marginBottom:"4px"}}));
+    const pvr=h("div",{style:{display:"flex",alignItems:"center",gap:"10px"}});pvr.innerHTML='<div style="text-align:center"><div style="font-size:10px;color:var(--textDim)">Total</div><div style="font-size:16px;color:var(--blue);font-family:var(--fd)">'+cr.pvTot+'</div></div><div style="text-align:center"><div style="font-size:10px;color:var(--textDim)">Daño</div><div style="font-size:16px;color:var(--danger);font-family:var(--fd)">'+cr.pvDmg+'</div></div><div style="text-align:center"><div style="font-size:10px;color:var(--textDim)">Rest.</div><div style="font-size:16px;color:'+(pvLeft<=0?"var(--danger)":"var(--success)")+';font-family:var(--fd)">'+pvLeft+'</div></div>';
+    const pvb=h("div",{style:{display:"flex",gap:"3px",marginLeft:"auto"}});[5,1].forEach(n=>pvb.appendChild(h("button",{class:"btn-s",text:"+"+n,onclick:()=>updCri(cr.id,{pvDmg:Math.max(0,cr.pvDmg-n)})})));[1,5].forEach(n=>pvb.appendChild(h("button",{class:"btn-d",text:"-"+n,onclick:()=>updCri(cr.id,{pvDmg:cr.pvDmg+n})})));pvr.appendChild(pvb);ps.appendChild(pvr);card.appendChild(ps);
+
+    const pas=h("div",{style:{marginBottom:"12px",borderTop:"1px solid var(--border)",paddingTop:"10px"}});pas.appendChild(h("div",{text:"Puntos de Acción",style:{fontSize:"11px",color:"var(--textDim)",fontFamily:"var(--fd)",letterSpacing:"1px",marginBottom:"4px"}}));
+    const par=h("div",{style:{display:"flex",alignItems:"center",gap:"10px"}});par.innerHTML='<div style="text-align:center"><div style="font-size:10px;color:var(--textDim)">Total</div><div style="font-size:16px;color:var(--blue);font-family:var(--fd)">'+cr.paTot+'</div></div><div style="text-align:center"><div style="font-size:10px;color:var(--textDim)">Usado</div><div style="font-size:16px;color:var(--danger);font-family:var(--fd)">'+cr.paUsd+'</div></div><div style="text-align:center"><div style="font-size:10px;color:var(--textDim)">Rest.</div><div style="font-size:16px;color:'+(paLeft<=0?"var(--danger)":"var(--success)")+';font-family:var(--fd)">'+paLeft+'</div></div>';
+    const pab=h("div",{style:{display:"flex",gap:"3px",marginLeft:"auto"}});
+    pab.appendChild(h("button",{text:"▼",style:{background:"var(--danger)",border:"none",borderRadius:"4px",color:"#fff",width:"36px",height:"32px",fontSize:"14px",cursor:"pointer"},onclick:()=>updCri(cr.id,{paUsd:cr.paUsd+1})}));
+    pab.appendChild(h("button",{text:"▲",style:{background:"var(--success)",border:"none",borderRadius:"4px",color:"#fff",width:"36px",height:"32px",fontSize:"14px",cursor:"pointer"},onclick:()=>updCri(cr.id,{paUsd:Math.max(0,cr.paUsd-1)})}));
+    par.appendChild(pab);pas.appendChild(par);card.appendChild(pas);
+
+    const bs=h("div",{style:{borderTop:"1px solid var(--border)",paddingTop:"10px"}});
+    const bd1=h("div",{style:{marginBottom:"8px"}});bd1.appendChild(h("div",{text:"Buffs",style:{fontSize:"11px",color:"var(--textDim)",marginBottom:"2px"}}));bd1.appendChild(mi(()=>cr.buffs||"",v=>updCriSilent(cr.id,{buffs:v}),{placeholder:"Mejoras activas"}));bs.appendChild(bd1);
+    const bd2=h("div");bd2.appendChild(h("div",{text:"Debuffs",style:{fontSize:"11px",color:"var(--textDim)",marginBottom:"2px"}}));bd2.appendChild(mi(()=>cr.debuffs||"",v=>updCriSilent(cr.id,{debuffs:v}),{placeholder:"Detrimentos activos"}));bs.appendChild(bd2);
+    card.appendChild(bs);f.appendChild(card);
+  });
+  if(cris.length===0)f.appendChild(h("div",{text:"Agrega criaturas para iniciar el combate",style:{textAlign:"center",padding:"30px",color:"var(--textDim)",fontFamily:"var(--fd)",letterSpacing:"1px"}}));
+  return f;
+}
+
+function renderNotas(){
+  const ch=gc(),f=document.createDocumentFragment();f.appendChild(SH("Notas"));
+  f.appendChild(mta(()=>ch.notas,v=>ss({notas:v}),{rows:20,placeholder:"Escribe tus notas aquí...",style:{lineHeight:"1.6"}}));return f;
+}
+
+const tabR={general:renderGeneral,combate:renderCombate,habilidades:renderHabilidades,equipo:renderEquipo,tecnicas:renderTecnicas,estado:renderEstado,iniciativa:renderIniciativa,notas:renderNotas};
+
+function render(){
+  const _sy=window.scrollY;liveEls=[];const app=document.getElementById("app");app.innerHTML="";const ch=gc();
+
+  const header=h("div",{class:"header"});
+  const top=h("div",{class:"topbar-main"});
+  const brand=h("div",{class:"brand"});
+  brand.appendChild(h("img",{class:"brand-mark",attrs:{src:"icon-192.png",alt:"Emblema de Gaethar"}}));
+  const brandText=h("div");brandText.appendChild(h("div",{class:"brand-title",text:"Gaethar"}));brandText.appendChild(h("div",{class:"brand-sub",text:"Hoja de Personaje"}));brand.appendChild(brandText);top.appendChild(brand);
+
+  if(!showManager){
+    const sum=h("div",{class:"character-summary"});
+    sum.appendChild(h("div",{class:"character-name",text:ch.nombre||"Sin nombre"}));
+    const meta=[];meta.push("Nivel "+(parseInt(ch.nivel)||1));if(ch.clase)meta.push(ch.clase);if(ch.subclase)meta.push(ch.subclase);if(ch.especie)meta.push(ch.especie+(ch.raza?" · "+ch.raza:""));
+    sum.appendChild(h("div",{class:"character-meta",text:meta.join("  •  ")}));top.appendChild(sum);
+  }else top.appendChild(h("div",{class:"character-summary"},[h("div",{class:"character-name",text:"Gestión de personajes"}),h("div",{class:"character-meta",text:"Respaldos, importación y selección"})]));
+
+  const manage=h("button",{class:"header-action",html:ico(showManager?"cerrar":"menu",15)+'<span>'+(showManager?"Cerrar":"Personajes")+'</span>',attrs:{title:showManager?"Cerrar gestor":"Abrir personajes"},onclick:()=>{showManager=!showManager;_scrollTopNext=true;render()}});top.appendChild(manage);header.appendChild(top);
+
+  if(!showManager){
+    const mt=h("div",{class:"mobile-tabs"});TABS.forEach(t=>mt.appendChild(h("button",{class:"tab-btn"+(currentTab===t.key?" active":""),html:ico(t.icon,13)+" "+t.label,onclick:()=>{currentTab=t.key;_scrollTopNext=true;render()}})));header.appendChild(mt);
+  }
+  app.appendChild(header);
+
+  if(showManager){
+    const mg=h("div",{class:"manager-panel"});mg.appendChild(SH("Personajes Guardados"));
+    const _lb=parseInt(localStorage.getItem("gaethar_lastBackup"))||0,_days=_lb?Math.floor((Date.now()-_lb)/864e5):null;
+    if(_days===null||_days>=14)mg.appendChild(h("div",{text:_days===null?"Nunca has respaldado tus personajes. Los datos viven solo en este navegador — usa «Respaldar todo» de vez en cuando.":"Último respaldo: hace "+_days+" días.",style:{fontSize:"11px",color:"var(--gold)",marginBottom:"12px",padding:"9px 11px",border:"1px solid var(--goldDim)",borderRadius:"7px",background:"rgba(203,169,79,.06)",lineHeight:"1.5"}}));
+    characters.forEach(c=>{const cd=h("div",{style:{background:c.id===activeCharId?"rgba(203,169,79,.075)":"var(--bgCard)",border:"1px solid "+(c.id===activeCharId?"var(--goldDim)":"var(--border)"),borderRadius:"9px",padding:"13px",marginBottom:"9px"}});const inf=h("div",{style:{cursor:"pointer",marginBottom:"8px"},onclick:()=>{activeCharId=c.id;showManager=false;save();render()}});inf.appendChild(h("div",{text:c.nombre||"Sin nombre",style:{color:"var(--goldBright)",fontFamily:"var(--fd)",fontSize:"14px"}}));inf.appendChild(h("div",{text:"Niv. "+(c.nivel||1)+(c.clase?" • "+c.clase:"")+(c.especie?" • "+c.especie:""),style:{color:"var(--textDim)",fontSize:"11px",marginTop:"2px"}}));cd.appendChild(inf);
+      const bt=h("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap"}});bt.appendChild(h("button",{class:"btn-ghost",html:ico("exportar",13)+" Exportar",onclick:()=>expChar(c.id)}));bt.appendChild(h("button",{class:"btn-ghost",html:ico("copiar",13)+" Duplicar",onclick:()=>dupChar(c.id)}));if(characters.length>1)bt.appendChild(h("button",{class:"btn-ghost",html:ico("basura",13)+" Eliminar",style:{color:"var(--danger)"},onclick:()=>{if(confirm("¿Eliminar?"))delChar(c.id)}}));cd.appendChild(bt);mg.appendChild(cd)});
+    const mb=h("div",{style:{display:"flex",gap:"8px",marginTop:"16px",flexDirection:"column"}});mb.appendChild(h("button",{text:"+ Nuevo Personaje",style:{width:"100%",background:"linear-gradient(180deg,rgba(203,169,79,.17),rgba(203,169,79,.08))",border:"1px solid var(--goldDim)",borderRadius:"8px",color:"var(--goldBright)",padding:"12px 16px",fontSize:"12px",cursor:"pointer",fontFamily:"var(--fd)",letterSpacing:"1px"},onclick:addNew}));const mb2=h("div",{style:{display:"flex",gap:"6px",justifyContent:"center",flexWrap:"wrap"}});mb.appendChild(mb2);
+    const ib=h("button",{class:"btn-ghost",html:ico("importar",13)+" Importar",onclick:()=>document.getElementById("fileImp").click()});mb2.appendChild(ib);
+    const fi=document.createElement("input");fi.type="file";fi.accept=".json";fi.id="fileImp";fi.style.display="none";fi.addEventListener("change",impChar);mb.appendChild(fi);mb2.appendChild(h("button",{class:"btn-ghost",html:ico("guardar",13)+" Respaldar todo",onclick:expAll}));mg.appendChild(mb);app.appendChild(mg);
+  }
+
+  if(!showManager){
+    const shell=h("div",{class:"app-shell"});
+    const sidebar=h("aside",{class:"sidebar"});sidebar.appendChild(h("div",{class:"sidebar-caption",text:"Secciones"}));const nav=h("nav",{class:"sidebar-nav",attrs:{"aria-label":"Secciones de la hoja"}});TABS.forEach(t=>nav.appendChild(h("button",{class:"tab-btn sidebar-tab"+(currentTab===t.key?" active":""),html:ico(t.icon,15)+" "+t.label,onclick:()=>{currentTab=t.key;_scrollTopNext=true;render()}})));sidebar.appendChild(nav);shell.appendChild(sidebar);
+
+    const workspace=h("main",{class:"workspace"});
+    const resetBar=h("div",{class:"workspace-actions"});resetBar.appendChild(h("button",{class:"btn-ghost",html:ico("reiniciar",13)+" Nuevo Personaje (Limpiar)",style:{opacity:".55"},onclick:resetChar}));workspace.appendChild(resetBar);
+    const ct=h("div",{class:"tab-fade content-panel"});const rn=tabR[currentTab];if(rn)ct.appendChild(rn());workspace.appendChild(ct);shell.appendChild(workspace);app.appendChild(shell);
+  }
+  requestAnimationFrame(()=>{if(_scrollTopNext){window.scrollTo(0,0);_scrollTopNext=false}else window.scrollTo(0,_sy)});
+}
+load();render();cargarDatos();
+window.addEventListener("storage",e=>{if(e.key!=="gaethar_chars")return;try{const s=JSON.parse(e.newValue||"[]");if(s.length){const cur=activeCharId;characters=s;activeCharId=s.some(c=>c.id===cur)?cur:s[0].id;render()}}catch{}});
+if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+</script>
+</body>
+</html>

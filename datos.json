@@ -13485,19 +13485,6 @@
    "salvacion": null
   },
   {
-   "nombre": "Sello de Lastre",
-   "accion": "Acción Menor",
-   "clase": "Onmyoji",
-   "escuela": null,
-   "subclase": null,
-   "tipo": "tecnica",
-   "tier": "Avanzadas",
-   "pn": 6,
-   "costo": 12,
-   "recurso": "Ofuda",
-   "salvacion": "INT"
-  },
-  {
    "nombre": "Sello de Marchitar",
    "accion": "Acción Mayor",
    "clase": "Onmyoji",

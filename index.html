@@ -1088,9 +1088,30 @@ function togglePick(ch,ent){
   const ya=(ch.elegidas||[]).includes(id);
   ss(c=>({...c,elegidas:ya?c.elegidas.filter(x=>x!==id):[...c.elegidas,id]}));render();
 }
+function tierOrdenGaethar(tier){
+  const t=String(tier||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  if(t.startsWith("basic"))return 0;
+  if(t.startsWith("avanz"))return 1;
+  if(t.startsWith("maestr"))return 2;
+  return 99;
+}
+function ordenarEntradasPorTier(lista){
+  const grupos=new Map();let siguiente=0;
+  const rows=lista.map((e,i)=>{
+    const grupo=(e.clase||e.escuela||"")+(e.subclase?" · "+e.subclase:"");
+    if(!grupos.has(grupo))grupos.set(grupo,siguiente++);
+    return{e,i,grupo};
+  });
+  rows.sort((a,b)=>{
+    const g=grupos.get(a.grupo)-grupos.get(b.grupo);if(g)return g;
+    const t=tierOrdenGaethar(a.e.tier)-tierOrdenGaethar(b.e.tier);if(t)return t;
+    return a.i-b.i;
+  });
+  return rows.map(x=>x.e);
+}
 function pickerSeccion(ch,tipo,titulo){
   const f=document.createDocumentFragment(),clave=tipo==="tecnica"?"tec":"hec";
-  const lista=entradasDisponibles(ch,tipo);
+  const lista=ordenarEntradasPorTier(entradasDisponibles(ch,tipo));
   const cab=h("div",{class:"picker-head"});cab.appendChild(h("span",{class:"picker-title",html:esc(titulo)+' <span class="picker-count">('+lista.length+')</span>'}));cab.appendChild(h("button",{class:"btn-ghost",text:verTodo[clave]?"◉ todo":"○ todo",attrs:{title:"Muestra también lo que no otorga tu clase o escuela"},style:verTodo[clave]?{opacity:"1",color:"var(--goldBright)"}:{},onclick:()=>{verTodo[clave]=!verTodo[clave];render()}}));cab.appendChild(h("button",{class:"btn-ghost",html:ico(pickOpen[clave]?"chev":"destello",13)+(pickOpen[clave]?" cerrar":" elegir"),onclick:()=>{pickOpen[clave]=!pickOpen[clave];render()}}));f.appendChild(cab);
   if(!pickOpen[clave])return f;
   if(!lista.length){f.appendChild(h("div",{class:"empty-state",text:tipo==="tecnica"?"Elige una clase (y subclase) para ver sus técnicas, o activa «todo».":"Elige tu acceso mágico para ver hechizos, o activa «todo»."}));return f;}

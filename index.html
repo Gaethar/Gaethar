@@ -316,7 +316,7 @@ equipo:{armaduraPrincipal:"",faldon:"",casco:"",guantes:"",botas:"",capa:"",anil
 armasComp:{manoDerecha:{nivel:"sinPracticar",valor:10},manoIzquierda:{nivel:"sinPracticar",valor:10},armaSecundaria:{nivel:"sinPracticar",valor:10},preparadoArmaPrincipal:{nivel:"sinPracticar",valor:10},preparadoArmaSecundaria:{nivel:"sinPracticar",valor:10}},
 atkMode:{manoDerecha:"mele",manoIzquierda:"mele",armaSecundaria:"mele",preparadoArmaPrincipal:"mele",preparadoArmaSecundaria:"mele"},
 escudo:"No",
-mochila:"",dotes:Object.fromEntries(DOTES_LEVELS.map(l=>[l,""])),tecnicas:Array.from({length:60},()=>({nombre:"",pn:"",recurso:"",notas:""})),pnTotales:0,pnExtras:0,atrExtras:0,raza:"",subclase:"",especializacion:"",escuelaPrincipal:"",descuentoHechizos:false,mcClase:"",mcNivel:0,mcSubclase:"",mcEspecializacion:"",mcEscuelaPrincipal:"",trasfondoEleccion:"",eleccionAtr:[],trasfondoAtrLibre:"",defectos2:"",compOverride:{},elegidas:[],mejoras:Array.from({length:20},()=>({tipo:"",nombre:"",duracion:"",notas:""})),aflicciones:Object.fromEntries(AFFLICTIONS.map(a=>[a,{cantidad:"",duracion:"",restante:""}])),estadosAlterados:Object.fromEntries(STATUS_EFFECTS.map(s=>[s,{cantidad:"",duracion:"",restante:""}])),resistencias:Object.fromEntries(RESISTANCES.map(r=>[r,""])),caUd:"",temple:"",notas:"",initTracker:{criaturas:[],ronda:1}}}
+mochila:"",dotes:Object.fromEntries(DOTES_LEVELS.map(l=>[l,""])),tecnicas:Array.from({length:60},()=>({nombre:"",pn:"",recurso:"",notas:""})),pnTotales:0,pnExtras:0,atrExtras:0,raza:"",subclase:"",especializacion:"",escuelaPrincipal:"",escuelaComplementaria:"",descuentoHechizos:false,mcClase:"",mcNivel:0,mcSubclase:"",mcEspecializacion:"",mcEscuelaPrincipal:"",mcEscuelaComplementaria:"",trasfondoEleccion:"",eleccionAtr:[],trasfondoAtrLibre:"",defectos2:"",compOverride:{},elegidas:[],mejoras:Array.from({length:20},()=>({tipo:"",nombre:"",duracion:"",notas:""})),aflicciones:Object.fromEntries(AFFLICTIONS.map(a=>[a,{cantidad:"",duracion:"",restante:""}])),estadosAlterados:Object.fromEntries(STATUS_EFFECTS.map(s=>[s,{cantidad:"",duracion:"",restante:""}])),resistencias:Object.fromEntries(RESISTANCES.map(r=>[r,""])),caUd:"",temple:"",notas:"",initTracker:{criaturas:[],ronda:1}}}
 
 let characters=[],activeCharId=null,currentTab="general",showManager=false;
 let newCri={nombre:"",iniciativa:"",pvTotal:"",paTotal:"",caUd:"",temple:"",movimiento:"",cm:"",cd:"",resistencias:"",notas:""};
@@ -417,32 +417,45 @@ const totalBonos=ch=>ATRKEYS.reduce((s,k)=>s+(bonosAuto(ch)[k]||0),0);
 const bonoAM=ch=>bonosAuto(ch).AM||0;
 
 /* Descuento de PN: técnica de especialización que abarata hechizos de tu escuela principal. */
-/* Todas las escuelas a las que el personaje tiene acceso, con su origen. */
+/* Todas las escuelas a las que el personaje tiene acceso, sumando clase principal y multiclase. */
 function escuelasAcceso(ch){
   if(!DATOS)return [];
   const out=[],add=(e,f)=>{if(e&&!out.some(x=>x.escuela===e))out.push({escuela:e,fuente:f})};
-  const base=DATOS.escuelaBase?.[ch.clase];
-  if(base&&base!=="__disciplina__")add(base,"Clase");
-  if(ch.subclase)add(DATOS.escuelaSubclase?.[ch.clase+"|"+ch.subclase],"Subclase");
-  if(ch.especializacion)(DATOS.accesoExtra?.[ch.clase+"|"+ch.especializacion]||[]).forEach(e=>add(e,ch.especializacion));
-  if(ch.subclase)(DATOS.accesoExtra?.[ch.clase+"|"+ch.subclase]||[]).forEach(e=>add(e,ch.subclase));
-  // técnicas elegidas que otorgan acceso (p.ej. Hechicero Innato)
+  const agregarContexto=(clase,subclase,especializacion,escPrincipal,escComplementaria,prefijo)=>{
+    if(!clase)return;
+    const base=DATOS.escuelaBase?.[clase];
+    if(base&&base!=="__disciplina__")add(base,prefijo);
+    if(subclase)add(DATOS.escuelaSubclase?.[clase+"|"+subclase],prefijo+" · "+subclase);
+    if(especializacion)(DATOS.accesoExtra?.[clase+"|"+especializacion]||[]).forEach(e=>add(e,prefijo+" · "+especializacion));
+    if(subclase)(DATOS.accesoExtra?.[clase+"|"+subclase]||[]).forEach(e=>add(e,prefijo+" · "+subclase));
+
+    // Mago (y futuras clases con especializacion.magias): respeta Principal/Secundaria/Complementaria.
+    const cla=dGet("clases",clase),mg=cla?.especializacion?.magias?.[especializacion];
+    if(mg){
+      ["Principal","Secundaria","Complementaria"].forEach(tipo=>{
+        const cfg=mg[tipo];if(!cfg)return;
+        let escuelas=[...(cfg.escuelas||[])];
+        if(cfg.eligeUna){
+          const elegida=tipo==="Principal"?escPrincipal:(tipo==="Complementaria"?escComplementaria:"");
+          escuelas=elegida?[elegida]:[];
+        }
+        escuelas.forEach(e=>add(e,prefijo+" · "+tipo));
+      });
+    }
+  };
+
+  agregarContexto(ch.clase,ch.subclase,ch.especializacion,ch.escuelaPrincipal,ch.escuelaComplementaria,"Clase principal");
+  agregarContexto(ch.mcClase,ch.mcSubclase,ch.mcEspecializacion,ch.mcEscuelaPrincipal,ch.mcEscuelaComplementaria,"Multiclase");
+
+  // Técnicas elegidas que otorgan acceso (p.ej. Hechicero Innato) aplican al personaje completo.
   (ch.elegidas||[]).forEach(id=>(DATOS.accesoTecnica?.[id]||[]).forEach(e=>add(e,id.split("|")[1])));
-  // Mago: sus disciplinas definen principal/secundaria/complementaria
-  const cla=dGet("clases",ch.clase),mg=cla?.especializacion?.magias?.[ch.especializacion];
-  if(mg){
-    (escuelasPrincipales(ch)).forEach(e=>add(e,"Principal"));
-    (mg.Secundaria?.escuelas||[]).forEach(e=>add(e,"Secundaria"));
-    (mg.Complementaria?.escuelas||[]).forEach(e=>add(e,"Complementaria"));
-  }
   return out;
 }
 function escuelasPrincipales(ch){
-  const cla=dGet("clases",ch.clase),e=cla?.especializacion;
-  if(!e||!e.magias||!ch.especializacion)return [];
-  const mg=e.magias[ch.especializacion]; if(!mg?.Principal)return [];
+  const cla=dGet("clases",ch.clase),mg=cla?.especializacion?.magias?.[ch.especializacion];
+  if(!mg?.Principal)return [];
   const l=mg.Principal.escuelas||[];
-  return mg.Principal.eligeUna ? (ch.escuelaPrincipal?[ch.escuelaPrincipal]:[]) : l;
+  return mg.Principal.eligeUna?(ch.escuelaPrincipal?[ch.escuelaPrincipal]:[]):l;
 }
 const TIERKEY=t=>t.startsWith("Bás")?"B":t.startsWith("Avan")?"A":"M";
 /* Descuentos activos = los que otorgan las técnicas que el personaje ya eligió. */
@@ -508,18 +521,20 @@ function gc(){
   if(ch.subclase===undefined)ch.subclase="";
   if(ch.especializacion===undefined)ch.especializacion="";
   if(ch.escuelaPrincipal===undefined)ch.escuelaPrincipal="";
+  if(ch.escuelaComplementaria===undefined)ch.escuelaComplementaria="";
   if(ch.descuentoHechizos===undefined)ch.descuentoHechizos=false;
   if(ch.mcClase===undefined)ch.mcClase="";
   if(ch.mcNivel===undefined)ch.mcNivel=0;
   if(ch.mcSubclase===undefined)ch.mcSubclase="";
   if(ch.mcEspecializacion===undefined)ch.mcEspecializacion="";
   if(ch.mcEscuelaPrincipal===undefined)ch.mcEscuelaPrincipal="";
+  if(ch.mcEscuelaComplementaria===undefined)ch.mcEscuelaComplementaria="";
   // La multiclase nunca puede llevar el nivel total por encima de 20 y tiene tope 10.
   if(ch.mcClase){
     const base=clampNiv(ch.nivel),maxMc=Math.max(0,Math.min(10,20-base));
-    if(maxMc<1){ch.mcClase="";ch.mcNivel=0;ch.mcSubclase="";ch.mcEspecializacion="";ch.mcEscuelaPrincipal="";}
+    if(maxMc<1){ch.mcClase="";ch.mcNivel=0;ch.mcSubclase="";ch.mcEspecializacion="";ch.mcEscuelaPrincipal="";ch.mcEscuelaComplementaria="";}
     else ch.mcNivel=Math.max(1,Math.min(maxMc,parseInt(ch.mcNivel)||1));
-  }else{ch.mcNivel=0;ch.mcSubclase="";ch.mcEspecializacion="";ch.mcEscuelaPrincipal="";}
+  }else{ch.mcNivel=0;ch.mcSubclase="";ch.mcEspecializacion="";ch.mcEscuelaPrincipal="";ch.mcEscuelaComplementaria="";}
   if(ch.trasfondoEleccion===undefined)ch.trasfondoEleccion="";
   if(!ch.compOverride)ch.compOverride={};
   if(!Array.isArray(ch.elegidas))ch.elegidas=[];
@@ -834,12 +849,13 @@ function renderGeneral(){
     const sel=(titulo,campo,arr,vacio,onch)=>field(titulo,msel(()=>ch[campo]||"",v=>{ss(c=>({...c,[campo]:v,...(onch?onch(v,c):{})}));render()},opc(arr,vacio)));
     ig.appendChild(sel("Especie","especie",DATOS.especies.map(x=>x.nombre),"— elegir —",()=>({raza:""})));
     if(ch.especie)ig.appendChild(sel("Raza","raza",DATOS.razas.filter(r=>r.especie===ch.especie).map(r=>r.nombre),"— elegir —"));
-    ig.appendChild(sel("Clase","clase",DATOS.clases.map(x=>x.nombre),"— elegir —",()=>({subclase:"",especializacion:"",escuelaPrincipal:""})));
+    ig.appendChild(sel("Clase","clase",DATOS.clases.map(x=>x.nombre),"— elegir —",()=>({subclase:"",especializacion:"",escuelaPrincipal:"",escuelaComplementaria:""})));
     const cla=dGet("clases",ch.clase);
     if(cla?.subclases?.length)ig.appendChild(sel("Subclase","subclase",cla.subclases,"— elegir —"));
-    if(cla?.especializacion)ig.appendChild(sel(cla.especializacion.etiqueta,"especializacion",cla.especializacion.opciones,"— elegir —",()=>({escuelaPrincipal:""})));
+    if(cla?.especializacion)ig.appendChild(sel(cla.especializacion.etiqueta,"especializacion",cla.especializacion.opciones,"— elegir —",()=>({escuelaPrincipal:"",escuelaComplementaria:""})));
     const mag=cla?.especializacion?.magias?.[ch.especializacion];
     if(mag?.Principal?.eligeUna)ig.appendChild(sel("Magia Principal","escuelaPrincipal",mag.Principal.escuelas,"— elegir —"));
+    if(mag?.Complementaria?.eligeUna)ig.appendChild(sel("Magia Complementaria","escuelaComplementaria",mag.Complementaria.escuelas,"— elegir —"));
     ig.appendChild(sel("Trasfondo","trasfondo",DATOS.trasfondos.map(x=>x.nombre),"— elegir —",()=>({trasfondoEleccion:""})));
     const tra=dGet("trasfondos",ch.trasfondo);
     if(tra?.eleccionAtributo?.length)ig.appendChild(sel("Bono a elegir","trasfondoEleccion",tra.eleccionAtributo.map(x=>x.atributo),"— elegir —"));
@@ -881,14 +897,17 @@ function renderGeneral(){
     const maxMc=maxNivelMulticlase(ch);
     mf.appendChild(mcf("Clase secundaria",msel(()=>ch.mcClase||"",v=>{
       if(v&&maxMc<1){alert("El nivel total no puede superar 20. Reduce primero el nivel de la clase principal.");render();return;}
-      ss(c=>({...c,mcClase:v,mcNivel:v?Math.max(1,Math.min(maxNivelMulticlase(c),parseInt(c.mcNivel)||1)):0,mcSubclase:"",mcEspecializacion:"",mcEscuelaPrincipal:""}));render();
+      ss(c=>({...c,mcClase:v,mcNivel:v?Math.max(1,Math.min(maxNivelMulticlase(c),parseInt(c.mcNivel)||1)):0,mcSubclase:"",mcEspecializacion:"",mcEscuelaPrincipal:"",mcEscuelaComplementaria:""}));render();
     },[{value:"",label:"— ninguna —"}].concat(DATOS.clases.filter(x=>x.nombre!==ch.clase).map(x=>({value:x.nombre,label:x.nombre}))))));
     if(ch.mcClase){
       const maxNv=Math.max(1,maxNivelMulticlase(ch));
       mf.appendChild(mcf("Nivel de multiclase",msel(()=>String(ch.mcNivel||1),v=>{ss(c=>({...c,mcNivel:Math.max(1,Math.min(maxNivelMulticlase(c),parseInt(v)||1))}));render()},Array.from({length:maxNv},(_,i)=>({value:String(i+1),label:"Nv "+(i+1)})))));
       const mc=dGet("clases",ch.mcClase);
       if(mc?.subclases?.length)mf.appendChild(mcf("Subclase",msel(()=>ch.mcSubclase||"",v=>{ss(c=>({...c,mcSubclase:v}));render()},[{value:"",label:"— elegir —"}].concat(mc.subclases.map(x=>({value:x,label:x}))))));
-      if(mc?.especializacion)mf.appendChild(mcf(mc.especializacion.etiqueta,msel(()=>ch.mcEspecializacion||"",v=>{ss(c=>({...c,mcEspecializacion:v,mcEscuelaPrincipal:""}));render()},[{value:"",label:"— elegir —"}].concat(mc.especializacion.opciones.map(x=>({value:x,label:x}))))));
+      if(mc?.especializacion)mf.appendChild(mcf(mc.especializacion.etiqueta,msel(()=>ch.mcEspecializacion||"",v=>{ss(c=>({...c,mcEspecializacion:v,mcEscuelaPrincipal:"",mcEscuelaComplementaria:""}));render()},[{value:"",label:"— elegir —"}].concat(mc.especializacion.opciones.map(x=>({value:x,label:x}))))));
+      const mcMag=mc?.especializacion?.magias?.[ch.mcEspecializacion];
+      if(mcMag?.Principal?.eligeUna)mf.appendChild(mcf("Magia Principal",msel(()=>ch.mcEscuelaPrincipal||"",v=>{ss(c=>({...c,mcEscuelaPrincipal:v}));render()},[{value:"",label:"— elegir —"}].concat(mcMag.Principal.escuelas.map(x=>({value:x,label:x}))))));
+      if(mcMag?.Complementaria?.eligeUna)mf.appendChild(mcf("Magia Complementaria",msel(()=>ch.mcEscuelaComplementaria||"",v=>{ss(c=>({...c,mcEscuelaComplementaria:v}));render()},[{value:"",label:"— elegir —"}].concat(mcMag.Complementaria.escuelas.map(x=>({value:x,label:x}))))));
     }
     mb.appendChild(mf);
     if(ch.mcClase){const tot=nivelTotalPersonaje(ch);mb.appendChild(h("div",{class:"multiclass-total",html:"Nivel total: <strong>"+tot+" / 20</strong> · "+esc(ch.clase)+" "+clampNiv(ch.nivel)+" + "+esc(ch.mcClase)+" "+(parseInt(ch.mcNivel)||0)}));}

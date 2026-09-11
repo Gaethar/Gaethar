@@ -941,6 +941,20 @@ function renderGeneral(){
   bg.appendChild(budgetTile("Restantes",()=>{const g=gc(),r=atrBudget(g.edad,nivelTotalPersonaje(g))+(parseInt(g.atrExtras)||0)-calc().paTot;return{text:String(r),color:r<0?"var(--danger)":r===0?"var(--goldBright)":"var(--success)"}},"remaining"));
   f.appendChild(bg);
 
+  f.appendChild(SH("Pasivas"));
+  const pp=h("div",{class:"section-panel passive-panel"});pp.appendChild(panelHead("escudo","Percepción Pasiva","Valores de referencia para observación, investigación e intuición"));
+  const pas=h("div",{class:"passive-grid"});pas.appendChild(SB("Percepción",()=>calc().percPas,"50-INT+Comp+Mod"));pas.appendChild(SB("Investigación",()=>calc().invPas,"50-INT+Comp+Mod"));pas.appendChild(SB("Perspicacia",()=>calc().perspPas,"50-VOL+Comp+Mod"));pp.appendChild(pas);
+  const pm=h("div",{class:"passive-mod-grid"});pm.appendChild(modRow("Percep.","percPasMod"));pm.appendChild(modRow("Invest.","invPasMod"));pm.appendChild(modRow("Persp.","perspPasMod"));pp.appendChild(pm);f.appendChild(pp);
+  return f;
+}
+
+function appendEstadisticasCombate(f,ch){
+  const panelHead=(icon,title,sub)=>{
+    const ph=h("div",{class:"panel-heading"});
+    const l=h("div",{style:{display:"flex",alignItems:"center",gap:"9px"}});
+    l.appendChild(h("span",{html:ico(icon,15),style:{color:"var(--gold)",display:"inline-flex",marginTop:"1px"}}));
+    const tx=h("div");tx.appendChild(h("div",{class:"panel-title",text:title}));if(sub)tx.appendChild(h("div",{class:"panel-subtitle",text:sub}));l.appendChild(tx);ph.appendChild(l);return ph;
+  };
   // ── Estadísticas de juego ──
   f.appendChild(SH("Estadísticas"));
   const st=h("div",{class:"general-stats-grid"});
@@ -984,16 +998,12 @@ function renderGeneral(){
   ra.appendChild(h("button",{class:"btn-ghost",html:ico("casa")+" lugar seguro",attrs:{"aria-pressed":String(reposoSeguro),title:"El Reposo en lugar seguro reduce el Estrés en 10 en vez de 5"},style:reposoSeguro?{opacity:"1",color:"var(--goldBright)",textShadow:"0 0 6px rgba(240,217,138,.4)"}:{},onclick:()=>{reposoSeguro=!reposoSeguro;render()}}));rest.appendChild(ra);
   rest.appendChild(h("div",{class:"rest-copy",text:"Respiro: +2 al Recurso principal por cada 10 min (máx. 1 h), −1 Estrés si dura al menos 30 min. Reposo: recupera todos los P.V. y el Recurso principal, −5 Estrés (−10 en un lugar seguro). Los recursos secundarios no se modifican automáticamente."}));sc.appendChild(rest);f.appendChild(sc);
 
-  f.appendChild(SH("Pasivas"));
-  const pp=h("div",{class:"section-panel passive-panel"});pp.appendChild(panelHead("escudo","Percepción Pasiva","Valores de referencia para observación, investigación e intuición"));
-  const pas=h("div",{class:"passive-grid"});pas.appendChild(SB("Percepción",()=>calc().percPas,"50-INT+Comp+Mod"));pas.appendChild(SB("Investigación",()=>calc().invPas,"50-INT+Comp+Mod"));pas.appendChild(SB("Perspicacia",()=>calc().perspPas,"50-VOL+Comp+Mod"));pp.appendChild(pas);
-  const pm=h("div",{class:"passive-mod-grid"});pm.appendChild(modRow("Percep.","percPasMod"));pm.appendChild(modRow("Invest.","invPasMod"));pm.appendChild(modRow("Persp.","perspPasMod"));pp.appendChild(pm);f.appendChild(pp);
-  return f;
 }
 
 function renderCombate(){
   const ch=gc(),f=document.createDocumentFragment();
   f.appendChild(SH("Combate"));
+  appendEstadisticasCombate(f,ch);
   const layout=h("div",{class:"combat-layout"});
 
   const off=h("section",{class:"section-panel combat-panel"});

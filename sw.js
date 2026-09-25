@@ -1,5 +1,5 @@
-const CACHE = "gaethar-v2";
-const CORE = ["./", "./index.html", "./manifest.json", "./datos.json", "./icon-192.png", "./icon-512.png"];
+const CACHE = "gaethar-v473";
+const CORE = ["./", "./index.html", "./manifest.json", "./datos.json", "./icon-192.png", "./icon-512.png", "./three.min.js"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
